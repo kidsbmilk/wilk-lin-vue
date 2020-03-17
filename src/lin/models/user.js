@@ -69,7 +69,7 @@ export default class User {
    * 获取当前用户信息，并返回User实例
    */
   static async getInformation() {
-    const info = await get('cms/user/information')
+    const info = await get('user/information')
     return new User(
       info.result.isActive,
       info.result.email,

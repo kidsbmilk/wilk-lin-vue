@@ -1,9 +1,6 @@
+import md5 from 'js-md5'
 import { post, get, put } from '@/lin/plugins/axios'
 import { saveTokens } from '../utils/token'
-import md5 from 'js-md5'
-
-const SUPER_VALUE = 2
-const ACTIVE_VALUE = 1
 
 export default class User {
   // 当前用户是否在激活状态
@@ -30,13 +27,13 @@ export default class User {
   // 分组名称
   groupName = null
 
-  constructor(active, email, groupId, username, _super, avatar, auths, nickname, groupName) {
-    this.isActive = active === ACTIVE_VALUE
+  constructor(isActive, email, groupId, username, isSuper, avatar, auths, nickname, groupName) {
+    this.isActive = isActive
     this.email = email
     this.groupId = groupId
     this.username = username
     this.avatar = avatar
-    this.isSuper = _super === SUPER_VALUE
+    this.isSuper = isSuper
     this.auths = auths || []
     this.nickname = nickname
     this.groupName = groupName
@@ -56,16 +53,16 @@ export default class User {
    * @param {string} password 密码
    */
   static async getToken(u, p) {
-    let username = u + p
-    let password = p + u
-    username = md5(username)
-    password = md5(password)
-    const tokens = await post('loginUser', {
+    const username = md5(u + p)
+    const password = md5(p + u)
+    const res = await post('loginUser', {
       username,
       password,
     })
-    saveTokens(tokens.access_token, tokens.refresh_token)
-    return tokens
+    let { result } = res // eslint-disable-line
+    let { accessToken, refreshToken} = result // eslint-disable-line
+    saveTokens(accessToken, refreshToken)
+    return result
   }
 
   /**
@@ -74,15 +71,15 @@ export default class User {
   static async getInformation() {
     const info = await get('cms/user/information')
     return new User(
-      info.active,
-      info.email,
-      info.group_id,
-      info.username,
-      info.admin,
-      info.avatar,
-      info.auths,
-      info.nickname,
-      info.group_name,
+      info.result.isActive,
+      info.result.email,
+      info.result.groupId,
+      info.result.username,
+      info.result.isAdmin,
+      info.result.avatar,
+      info.result.auths,
+      info.result.nickname,
+      info.result.groupName,
     )
   }
 

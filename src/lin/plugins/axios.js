@@ -109,7 +109,11 @@ _axios.interceptors.request.use(
 // Add a response interceptor
 _axios.interceptors.response.use(
   async res => {
-    let { error_code, msg } = res.data // eslint-disable-line
+    // console.log('res')
+    // console.log(res)
+    // console.log(res.data)
+    // let { error_code, msg } = res.data // eslint-disable-line
+    let { code, result, desc, reqId } = res.data // eslint-disable-line
     let message = '' // 错误提示
     if (res.status.toString().charAt(0) === '2') {
       return res.data
@@ -118,7 +122,7 @@ _axios.interceptors.response.use(
       const { params, url } = res.config
 
       // refresh_token 异常，直接登出
-      if (error_code === 10000 || error_code === 10100) {
+      if (code === 10000 || code === 10100) {
         setTimeout(() => {
           store.dispatch('loginOut')
           const { origin } = window.location
@@ -128,15 +132,15 @@ _axios.interceptors.response.use(
         return
       }
       // 令牌相关，刷新令牌
-      if (error_code === 10040 || error_code === 10050) {
+      if (code === 10040 || code === 10050) {
         const cache = {}
         if (cache.url !== url) {
           cache.url = url
           const refreshResult = await _axios('cms/user/refresh')
           saveAccessToken(refreshResult.access_token)
           // 将上次失败请求重发
-          const result = await _axios(res.config)
-          resolve(result)
+          const reResult = await _axios(res.config)
+          resolve(reResult)
           return
         }
       }
@@ -145,13 +149,13 @@ _axios.interceptors.response.use(
         reject(res)
         return
       }
-      console.log('msg', msg)
+      console.log('desc', desc)
       // 本次请求添加 params 参数：showBackend 为 true, 弹出后端返回错误信息
       if (params && params.showBackend) {
-        message = msg
+        message = desc
       } else {
         // 弹出前端自定义错误信息
-        const errorArr = Object.entries(ErrorCode).filter(v => v[0] === error_code.toString())
+        const errorArr = Object.entries(ErrorCode).filter(v => v[0] === code.toString())
         // 匹配到前端自定义的错误码
         if (errorArr.length > 0) {
           if (errorArr[0][1] !== '') {

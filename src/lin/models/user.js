@@ -1,5 +1,6 @@
 import { post, get, put } from '@/lin/plugins/axios'
 import { saveTokens } from '../utils/token'
+import md5 from 'js-md5'
 
 const SUPER_VALUE = 2
 const ACTIVE_VALUE = 1
@@ -54,8 +55,12 @@ export default class User {
    * @param {string} username 用户名
    * @param {string} password 密码
    */
-  static async getToken(username, password) {
-    const tokens = await post('cms/user/login', {
+  static async getToken(u, p) {
+    let username = u + p
+    let password = p + u
+    username = md5(username)
+    password = md5(password)
+    const tokens = await post('loginUser', {
       username,
       password,
     })

@@ -372,8 +372,6 @@ export default {
         // eslint-disable-line
         if (valid) {
           const { user } = this.$store.state
-          console.log(this.form)
-          console.log(user.username)
           this.form.oldPassword = md5(this.form.oldPassword + user.username)
           this.form.username = md5(user.username + this.form.newPassword)
           this.form.newPassword = md5(this.form.newPassword + user.username)

@@ -44,7 +44,7 @@ export default class User {
    * @param {object} data 注册信息
    */
   static register(data) {
-    return post('cms/user/register', data, { handleError: true })
+    return post('user/register', data, { handleError: true })
   }
 
   /**
@@ -55,7 +55,7 @@ export default class User {
   static async getToken(u, p) {
     const username = md5(u + p)
     const password = md5(p + u)
-    const res = await post('loginUser', {
+    const res = await post('user/login', {
       username,
       password,
     })
@@ -69,7 +69,7 @@ export default class User {
    * 获取当前用户信息，并返回User实例
    */
   static async getInformation() {
-    const info = await get('user/information')
+    const info = await get('user/info')
     return new User(
       info.result.isActive,
       info.result.email,
@@ -83,35 +83,19 @@ export default class User {
     )
   }
 
-  // /**
-  //  * 获取当前用户信息和所拥有的权限
-  //  */
-  // static async getAuths() {
-  //   const info = await get('cms/user/auths')
-  //   return new User(
-  //     info.active,
-  //     info.email,
-  //     info.group_id,
-  //     info.username,
-  //     info.admin,
-  //     info.avatar,
-  //     info.auths,
-  //     info.nickname,
-  //     info.group_name,
-  //   )
-  // }
-
   /**
    * 用户修改密码
    * @param {string} newPassword 新密码
    * @param {string} confirmPassword 确认新密码
    * @param {string} oldPassword 旧密码
+   * @param {string} username 用户名
    */
-  static updatePassword({ old_password, new_password, confirm_password }) {
-    return put('cms/user/change_password', {
-      new_password,
-      confirm_password,
-      old_password,
+  static updatePassword({ oldPassword, newPassword, confirmPassword, username }) {
+    return put('user/change/password', {
+      newPassword,
+      confirmPassword,
+      oldPassword,
+      username
     })
   }
 }

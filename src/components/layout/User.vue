@@ -91,14 +91,14 @@
         label-width="90px"
         @submit.native.prevent
       >
-        <el-form-item label="原始密码" prop="old_password">
-          <el-input type="password" v-model="form.old_password" autocomplete="off"></el-input>
+        <el-form-item label="原始密码" prop="oldPassword">
+          <el-input type="password" v-model="form.oldPassword" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="新密码" prop="new_password">
-          <el-input type="password" v-model="form.new_password" autocomplete="off"></el-input>
+        <el-form-item label="新密码" prop="newPassword">
+          <el-input type="password" v-model="form.newPassword" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="确认密码" prop="confirm_password" label-position="top">
-          <el-input type="password" v-model="form.confirm_password" autocomplete="off"></el-input>
+        <el-form-item label="确认密码" prop="confirmPassword" label-position="top">
+          <el-input type="password" v-model="form.confirmPassword" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitForm('form')">保存</el-button>
@@ -110,6 +110,7 @@
 </template>
 
 <script>
+import md5 from 'js-md5'
 import { mapActions, mapGetters } from 'vuex'
 import Vue from 'vue'
 import Croppa from 'vue-croppa'
@@ -140,7 +141,7 @@ export default {
         callback(new Error('密码长度不能少于6位数'))
       } else {
         if (this.form.checkPassword !== '') {
-          this.$refs.form.validateField('confirm_password')
+          this.$refs.form.validateField('confirmPassword')
         }
         callback()
       }
@@ -148,7 +149,7 @@ export default {
     const validatePassword2 = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请再次输入密码'))
-      } else if (value !== this.form.new_password) {
+      } else if (value !== this.form.newPassword) {
         callback(new Error('两次输入密码不一致!'))
       } else {
         callback()
@@ -161,14 +162,14 @@ export default {
       nickname: null,
       groupName: null,
       form: {
-        old_password: '',
-        new_password: '',
-        confirm_password: '',
+        oldPassword: '',
+        newPassword: '',
+        confirmPassword: '',
       },
       rules: {
-        old_password: [{ validator: oldPassword, trigger: 'blur', required: true }],
-        new_password: [{ validator: validatePassword, trigger: 'blur', required: true }],
-        confirm_password: [{ validator: validatePassword2, trigger: 'blur', required: true }],
+        oldPassword: [{ validator: oldPassword, trigger: 'blur', required: true }],
+        newPassword: [{ validator: validatePassword, trigger: 'blur', required: true }],
+        confirmPassword: [{ validator: validatePassword2, trigger: 'blur', required: true }],
       },
       cropRule: {
         width,
@@ -270,7 +271,7 @@ export default {
           return false
         }
         // TODO: 错误码处理
-        // if (res.error_code === 10110) {
+        // if (res.code === 10110) {
         //   throw new Error('文件体积过大')
         // }
         return this.$axios({
@@ -282,7 +283,7 @@ export default {
         })
           .then(putRes => {
             // eslint-disable-line
-            if (putRes.error_code === 0) {
+            if (putRes.code === 0) {
               this.$message({
                 type: 'success',
                 message: '更新头像成功',
@@ -322,7 +323,7 @@ export default {
             },
           })
             .then(res => {
-              if (res.error_code === 0) {
+              if (res.code === 0) {
                 this.$message({
                   type: 'success',
                   message: '更新昵称成功',
@@ -359,20 +360,27 @@ export default {
       window.location.reload(true)
     },
     submitForm(formName) {
-      if (this.form.old_password === '' && this.form.new_password === '' && this.form.confirm_password === '') {
+      if (this.form.oldPassword === '' && this.form.newPassword === '' && this.form.confirmPassword === '') {
         this.dialogFormVisible = false
         return
       }
-      if (this.form.old_password === this.form.new_password) {
+      if (this.form.oldPassword === this.form.newPassword) {
         this.$message.error('新密码不能与原始密码一样')
         return
       }
       this.$refs[formName].validate(async valid => {
         // eslint-disable-line
         if (valid) {
+          const { user } = this.$store.state
+          console.log(this.form)
+          console.log(user.username)
+          this.form.oldPassword = md5(this.form.oldPassword + user.username)
+          this.form.username = md5(user.username + this.form.newPassword)
+          this.form.newPassword = md5(this.form.newPassword + user.username)
+          this.form.confirmPassword = this.form.newPassword
           const res = await User.updatePassword(this.form)
-          if (res.error_code === 0) {
-            this.$message.success(`${res.msg}`)
+          if (res.code === 0) {
+            this.$message.success(`${res.desc}`)
             this.resetForm(formName)
             this.dialogFormVisible = false
             setTimeout(() => {

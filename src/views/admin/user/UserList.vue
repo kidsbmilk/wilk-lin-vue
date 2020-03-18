@@ -49,7 +49,7 @@
             />
           </el-tab-pane>
           <el-tab-pane label="修改密码" name="修改密码">
-            <user-password @handlePasswordResult="handlePasswordResult" ref="password" :id="id" class="password" />
+            <user-password @handlePasswordResult="handlePasswordResult" ref="password" :id="id" :info="form" class="password" />
           </el-tab-pane>
         </el-tabs>
       </div>

@@ -1,4 +1,5 @@
 /* eslint-disable class-methods-use-this */
+import md5 from 'js-md5'
 import { post, get, put, _delete } from '@/lin/plugins/axios'
 
 export default class Admin {
@@ -32,19 +33,20 @@ export default class Admin {
   }
 
   static getAllAuths() {
-    return get('cms/admin/authority')
+    return get('admin/permission/all')
   }
 
   static async getAdminUsers({ group_id, count = this.uCount, page = this.uPag }) {
     let res
     if (group_id) {
-      res = await get('cms/admin/users', {
+      const groupId = group_id
+      res = await get('admin/users', {
         count,
         page,
-        group_id,
+        groupId,
       })
     } else {
-      res = await get('cms/admin/users', {
+      res = await get('admin/users', {
         count,
         page,
       })
@@ -63,7 +65,7 @@ export default class Admin {
   }
 
   async getGroupsWithAuths({ count = this.uCount, page = this.uPag }) {
-    const res = await get('cms/admin/groups', {
+    const res = await get('admin/groups', {
       count,
       page,
     })
@@ -81,17 +83,17 @@ export default class Admin {
   }
 
   static async getAllGroups() {
-    const groups = await get('cms/admin/group/all')
-    return groups
+    const groups = await get('admin/group/all')
+    return groups.result
   }
 
   static async getOneGroup(id) {
-    const group = await get(`cms/admin/group/${id}`)
-    return group
+    const group = await get(`admin/group/${id}`)
+    return group.result
   }
 
   static async createOneGroup(name, info, auths) {
-    const res = await post('cms/admin/group', {
+    const res = await post('admin/group/save', {
       name,
       info,
       auths,
@@ -100,7 +102,7 @@ export default class Admin {
   }
 
   static async updateOneGroup(name, info, id) {
-    const res = await put(`cms/admin/group/${id}`, {
+    const res = await put(`admin/group/modify/${id}`, {
       name,
       info,
     })
@@ -108,42 +110,49 @@ export default class Admin {
   }
 
   static async deleteOneGroup(id) {
-    const res = await _delete(`cms/admin/group/${id}`)
+    const res = await _delete(`admin/group/delete/${id}`)
     return res
   }
 
   static async deleteOneUser(id) {
-    const res = await _delete(`cms/admin/${id}`)
+    const res = await _delete(`admin/user/delete/${id}`)
     return res
   }
 
   static async updateOneUser(email, group_id, id) {
-    const res = await put(`cms/admin/${id}`, {
+    const groupId = group_id
+    const res = await put(`admin/user/modify/${id}`, {
       email,
-      group_id,
+      groupId,
     })
     return res
   }
 
+  static async changePassword(username, new_password, confirm_password, id) {
+    const newPassword = md5(username + new_password)
+    const confirmPassword = newPassword
+    const res = await put(`admin/password/modify/${id}`, {
+      newPassword,
+      confirmPassword,
+    })
+    return res
+  }
+
+  // 更新、设置权限
   static async dispatchAuths(group_id, auths) {
-    const res = await post('cms/admin/dispatch/patch', {
-      group_id,
+    const groupId = group_id
+    const res = await post('admin/group/auth/dispatch', {
+      groupId,
       auths,
     })
     return res
   }
 
-  static async changePassword(new_password, confirm_password, id) {
-    const res = await put(`cms/admin/password/${id}`, {
-      new_password,
-      confirm_password,
-    })
-    return res
-  }
-
+  // 清某某些权限
   static async removeAuths(group_id, auths) {
-    const res = await post('cms/admin/remove', {
-      group_id,
+    const groupId = group_id
+    const res = await post('admin/group/auth/remove', {
+      groupId,
       auths,
     })
     return res

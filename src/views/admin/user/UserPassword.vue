@@ -27,7 +27,18 @@
 import Admin from '@/lin/models/admin'
 
 export default {
-  props: ['id'],
+  props: {
+    id: {
+      // 用户id
+      type: Number,
+      default: undefined,
+    },
+    info: {
+      // 用户信息
+      type: Object,
+      default: () => {},
+    }
+  },
   data() {
     const validatePassword = (rule, value, callback) => {
       if (value === '') {
@@ -76,7 +87,7 @@ export default {
           let res
           try {
             this.loading = true
-            res = await Admin.changePassword(this.form.new_password, this.form.confirm_password, this.id) // eslint-disable-line
+            res = await Admin.changePassword(this.info.username, this.form.new_password, this.form.confirm_password, this.id) // eslint-disable-line
           } catch (e) {
             this.loading = false
             console.log(e)

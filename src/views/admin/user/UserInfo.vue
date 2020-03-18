@@ -159,9 +159,9 @@ export default {
             try {
               this.loading = true
               res = await User.register(this.form)
-              if (res.error_code === 0) {
+              if (res.code === 0) {
                 this.loading = false
-                this.$message.success(`${res.msg}`)
+                this.$message.success(`${res.desc}`)
                 this.eventBus.$emit('addUser', true)
                 this.resetForm(formName)
               }
@@ -183,13 +183,13 @@ export default {
               this.loading = false
               console.log(e)
             }
-            if (res.error_code === 0) {
+            if (res.code === 0) {
               this.loading = false
-              this.$message.success(`${res.msg}`)
+              this.$message.success(`${res.desc}`)
               this.$emit('handleInfoResult', true)
             } else {
               this.loading = false
-              this.$message.error(`${res.msg}`)
+              this.$message.error(`${res.desc}`)
             }
           }
         } else {

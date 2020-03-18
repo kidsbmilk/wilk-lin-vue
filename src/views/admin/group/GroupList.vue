@@ -124,8 +124,8 @@ export default {
         if (this.cacheForm.name !== this.form.name || this.cacheForm.info !== this.form.info) {
           // eslint-disable-line
           const res = await Admin.updateOneGroup(this.form.name, this.form.info, this.id)
-          if (res.error_code === 0) {
-            this.$message.success(`${res.msg}`)
+          if (res.code === 0) {
+            this.$message.success(`${res.desc}`)
             this.getAllGroups()
           }
         }
@@ -207,17 +207,17 @@ export default {
           this.loading = false
           console.log(e)
         }
-        if (res.error_code === 0) {
+        if (res.code === 0) {
           await this.getAllGroups()
           this.$message({
             type: 'success',
-            message: `${res.msg}`,
+            message: `${res.desc}`,
           })
         } else {
           this.loading = false
           this.$message({
             type: 'error',
-            message: `${res.msg}`,
+            message: `${res.desc}`,
           })
         }
       })

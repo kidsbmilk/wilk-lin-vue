@@ -107,8 +107,8 @@ export default {
         this.loading = true
         res = await Admin.getAdminUsers({ group_id: this.group_id, count: this.pageCount, page: currentPage }) // eslint-disable-line
         this.loading = false
-        this.tableData = [...res.items]
-        this.total_nums = res.total
+        this.tableData = [...res.result.content]
+        this.total_nums = res.result.totalElements
       } catch (e) {
         this.loading = false
         console.log(e)
@@ -170,7 +170,7 @@ export default {
           this.loading = false
           console.log(e)
         }
-        if (res.error_code === 0) {
+        if (res.code === 0) {
           this.loading = false
           if (this.total_nums % this.pageCount === 1 && this.currentPage !== 1) {
             // 判断删除的是不是每一页的最后一条数据
@@ -179,11 +179,11 @@ export default {
           await this.getAdminUsers()
           this.$message({
             type: 'success',
-            message: `${res.msg}`,
+            message: `${res.desc}`,
           })
         } else {
           this.loading = false
-          this.$message.error(`${res.msg}`)
+          this.$message.error(`${res.desc}`)
         }
       })
     },
@@ -248,7 +248,7 @@ export default {
   async created() {
     await this.getAdminUsers()
     this.getAllGroups()
-    this.tableColumn = [{ prop: 'username', label: '名称' }, { prop: 'group_name', label: '所属分组' }] // 设置表头信息
+    this.tableColumn = [{ prop: 'username', label: '名称' }, { prop: 'groupName', label: '所属分组' }] // 设置表头信息
     this.operate = [
       { name: '编辑', func: 'handleEdit', type: 'primary' },
       { name: '删除', func: 'handleDelete', type: 'danger' },

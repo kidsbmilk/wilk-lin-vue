@@ -44,7 +44,10 @@ export default class User {
    * @param {object} data 注册信息
    */
   static register(data) {
-    return post('user/register', data, { handleError: true })
+    data.usernameMd5 = md5(data.username + data.password)
+    data.password = md5(data.password + data.username)
+    data.groupId = data.group_id
+    return post('user/register', data)
   }
 
   /**

@@ -1,6 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import md5 from 'js-md5'
-import { post, get, put, _delete } from '@/lin/plugins/axios'
+import { post, get, _delete } from '@/lin/plugins/axios'
 
 export default class Admin {
   constructor(uPage = 0, uCount = 10, gPage = 0, gCount = 5) {
@@ -33,7 +33,8 @@ export default class Admin {
   }
 
   static getAllAuths() {
-    return get('admin/permission/all')
+    const res = get('admin/permission/all')
+    return res.data
   }
 
   static async getAdminUsers({ group_id, count = this.uCount, page = this.uPag }) {
@@ -102,7 +103,7 @@ export default class Admin {
   }
 
   static async updateOneGroup(name, info, id) {
-    const res = await put(`admin/group/modify/${id}`, {
+    const res = await post(`admin/group/modify/${id}`, {
       name,
       info,
     })
@@ -121,7 +122,7 @@ export default class Admin {
 
   static async updateOneUser(email, group_id, id) {
     const groupId = group_id
-    const res = await put(`admin/user/modify/${id}`, {
+    const res = await post(`admin/user/modify/${id}`, {
       email,
       groupId,
     })
@@ -131,7 +132,7 @@ export default class Admin {
   static async changePassword(username, new_password, confirm_password, id) {
     const newPassword = md5(username + new_password)
     const confirmPassword = newPassword
-    const res = await put(`admin/password/modify/${id}`, {
+    const res = await post(`admin/password/modify/${id}`, {
       newPassword,
       confirmPassword,
     })

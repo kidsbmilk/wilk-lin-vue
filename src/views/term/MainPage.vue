@@ -368,8 +368,9 @@ export default {
   },
   mounted() {
     document.title = 'wilk主页'
-    // 因为没有退出并清cookies的操作，所以下面的判断目前没用
-    this.freshTree() // 这个请求会对返回进行处理，如果没登录就跳到登录页
+    if (term === null) {
+      this.freshTree()
+    }
   }
 }
 </script>

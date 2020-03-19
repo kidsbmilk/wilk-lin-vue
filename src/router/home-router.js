@@ -29,6 +29,7 @@ deepTravel(stageConfig, viewConfig => {
     right: viewConfig.right,
     type: viewConfig.type,
     blueBaseColor: viewConfig.blueBaseColor ? 'viewConfig.blueBaseColor' : '',
+    keepAlive: viewConfig.keepAlive === true // 需要被缓存
   }
   homeRouter.push(viewRouter)
 })

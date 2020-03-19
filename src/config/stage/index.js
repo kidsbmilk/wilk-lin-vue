@@ -35,6 +35,7 @@ let homeRouter = [
     inNav: true,
     icon: 'iconfont icon-rizhiguanli',
     order: 2,
+    keepAlive: true, // 需要被缓存
     // permission: ['查询所有日志'],
   },
   {

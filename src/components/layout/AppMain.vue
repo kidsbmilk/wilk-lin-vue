@@ -8,7 +8,16 @@
       各种内部页面间的跳转都是替换appMain里的内容，也是因为router-view的原因。
       在这个项目中，只有两外使用router-view了：App.vue以及这个AppMain.vue。
       -->
-      <transition name="fade-transform" mode="out-in"> <router-view></router-view> </transition>
+      <transition-group name="fade-transform" mode="out-in">
+        <div key="keep">
+          <keep-alive>
+            <router-view v-if="$route.meta.keepAlive"></router-view>
+          </keep-alive>
+        </div>
+        <div key="notkeep">
+          <router-view v-if="!$route.meta.keepAlive"></router-view>
+        </div>
+      </transition-group>
     </div>
   </section>
 </template>

@@ -33,8 +33,7 @@ export default class Admin {
   }
 
   static getAllAuths() {
-    const res = get('admin/permission/all')
-    return res.data
+    return get('admin/permission/all')
   }
 
   static async getAdminUsers({ group_id, count = this.uCount, page = this.uPag }) {

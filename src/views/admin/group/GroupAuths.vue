@@ -17,10 +17,10 @@
             </div>
 
             <ul class="permissions-ul">
-              <li class="permissions-li" v-for="(item, key) in auth" :key="key">
+              <li class="permissions-li" v-for="item in auth" :key="item.id">
                 <el-checkbox
-                  :label="key | filterTitle(32)"
-                  @change="singleCheck($event, key, moduleName)"
+                  :label="item.name"
+                  @change="singleCheck($event, item.id, moduleName)"
                 ></el-checkbox>
               </li>
             </ul>
@@ -49,24 +49,22 @@ export default {
   methods: {
     // 获取全部权限
     async getAllAuths() {
-      this.allAuths = await Admin.getAllAuths()
+      const restemp = await Admin.getAllAuths()
+      this.allAuths = restemp.result
     },
     // 获取分组权限
     async getGroupAuths() {
       this.auths = [] // 父组件 重置
-      this.allAuths = await Admin.getAllAuths()
+      const restemp = await Admin.getAllAuths()
+      this.allAuths = restemp.result
       // 通过判断有没有传入id，来判断当前页面是添加分组还是编辑分组
       if (this.id) {
-        let res = await Admin.getOneGroup(this.id)
+        const res = await Admin.getOneGroup(this.id)
         // 获取分组所拥有的权限
         /* eslint-disable */
-        res = JSON.parse(JSON.stringify(res)) // 去除__ob__
+        // res = JSON.parse(JSON.stringify(res)) // 去除__ob__
         for (let i = 0; i < res.auths.length; i++) {
-          for (const key in res.auths[i]) {
-            for (let j = 0; j < res.auths[i][key].length; j++) {
-              this.auths.push(res.auths[i][key][j].auth)
-            }
-          }
+          this.auths.push(res.auths[i])
         }
         this.$emit('updateCacheAuths', this.auths)
         // 检查module状态是否需要选中

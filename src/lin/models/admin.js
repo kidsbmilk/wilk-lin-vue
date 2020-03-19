@@ -128,10 +128,12 @@ export default class Admin {
     return res
   }
 
-  static async changePassword(username, new_password, confirm_password, id) {
-    const newPassword = md5(username + new_password)
+  static async changePassword(name, new_password, confirm_password, id) {
+    const username = md5(name + new_password)
+    const newPassword = md5(new_password + name)
     const confirmPassword = newPassword
     const res = await post(`admin/password/modify/${id}`, {
+      username,
       newPassword,
       confirmPassword,
     })

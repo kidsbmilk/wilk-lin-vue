@@ -79,7 +79,7 @@ export default {
     // 弹窗打开时，判断某一分类权限是否全部选中
     initModuleCheck(moduleName) {
       const currentModuleChildrenArrTemp = Object.values(this.allAuths[moduleName])
-      let currentModuleChildrenArr = []
+      const currentModuleChildrenArr = []
       for (let i = 0; i < currentModuleChildrenArrTemp.length; i++) {
         currentModuleChildrenArr.push(currentModuleChildrenArrTemp[i].name)
       }
@@ -94,8 +94,8 @@ export default {
       }
     },
     moduleCheck(checked, auth, moduleName) {
-      let authArr = []
-      for(let i = 0; i < auth.length; i ++) {
+      const authArr = []
+      for (let i = 0; i < auth.length; i++) {
         authArr.push(auth[i].name)
       }
       if (checked) {
@@ -113,9 +113,9 @@ export default {
     },
     singleCheck(checked, singleAuth, moduleName) {
       const currentModuleChildrenArrTemp = Object.values(this.allAuths[moduleName])
-      let currentModuleChildrenArr = []
+      const currentModuleChildrenArr = []
       for (let i = 0; i < currentModuleChildrenArrTemp.length; i++) {
-          currentModuleChildrenArr.push(currentModuleChildrenArrTemp[i].name)
+        currentModuleChildrenArr.push(currentModuleChildrenArrTemp[i].name)
       }
       const intersect = Utils.getIntersect(currentModuleChildrenArr, this.auths)
       if (intersect.length === currentModuleChildrenArr.length) {

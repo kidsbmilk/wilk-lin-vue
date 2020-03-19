@@ -1,7 +1,7 @@
 <template>
   <div id="mainPage">
     <div>
-      <div class='terminal-div'>
+      <div class='terminal-div' ref="termdiv">
         <div id='terminal'></div>
       </div>
       <div class='tree-div'>
@@ -66,6 +66,7 @@ import { Terminal } from 'xterm'
 import * as fit from 'xterm/lib/addons/fit/fit'
 import * as attach from 'xterm/lib/addons/attach/attach'
 import 'xterm/dist/xterm.css'
+import elementResizeDetectorMaker from 'element-resize-detector'
 import treePage from './TreePage.vue'
 import 'element-ui/lib/theme-chalk/index.css'// element-ui的css
 import wilkTerm from '@/models/wilkterm'
@@ -78,6 +79,7 @@ let nodeModelTp = null
 let wsGlobal = null
 const INNER_CMD_PREFIX = 'WILK_IN_'
 let lastCmdHistory = null
+let termInited = false
 
 // https://www.cnblogs.com/freefei/p/8976802.html
 
@@ -187,7 +189,7 @@ export default {
       nodeModelTp = nodeModel
     },
     delCmdFunc(isChildren, nodeId, parentId) {
-      console.log(`delCmdFunc: nodeId: ${nodeId}parentId: ${parentId}`)
+      // console.log(`delCmdFunc: nodeId: ${nodeId}, parentId: ${parentId}`)
       const data = new URLSearchParams()
       let url = ''
       if (isChildren) {
@@ -277,10 +279,10 @@ export default {
     async freshTree() {
       // 所有请求都在调用前先判断登录标记是否已invalid，我这个项目的前端请求封装不好 TODO.
       // this.uploadFunc() // 这个倒是可以，只是放mounted里的ws下就调用不了了。
-      console.log('freshTree')
+      // console.log('freshTree')
       const res = await wilkTerm.freshTree('server/getserverandcmd')
       if (res.code === 0) {
-        console.log(res)
+        // console.log(res)
         if (res.result.length === 0) {
           this.isShowAddButton = true
         } else {
@@ -297,6 +299,14 @@ export default {
       console.log('click upload')
       // this.$refs.uploadButton.$emit('click') // 这个应该是针对一般控件的
       this.$refs.uploadButton.$el.click() // 这个是针对element-ui控件的
+    },
+    termResize() {
+      if (termInited === true) {
+        term.fit()
+        // console.log(`${INNER_CMD_PREFIX}stty cols ${term.cols}; stty rows ${term.rows}\r`)
+        ws.send(`${INNER_CMD_PREFIX}stty cols ${term.cols}; stty rows ${term.rows}\r`)
+        // console.log('resize', [term.cols, term.rows])
+      }
     },
     initTerminal() {
       // 用户打开某服务器后，websocket会有定期保活的功能。
@@ -328,7 +338,9 @@ export default {
           // this.$refs.uploadButton.$el.click() // 这个是针对element-ui控件的
           // console.log('on message:', event.data)
           if (event.data === 'wilk-login-success') {
-            ws.send(`${INNER_CMD_PREFIX}stty cols ${term.cols} stty rows ${term.rows}\r`)
+            // console.log(`${INNER_CMD_PREFIX}stty cols ${term.cols}; stty rows ${term.rows}\r`)
+            ws.send(`${INNER_CMD_PREFIX}stty cols ${term.cols}; stty rows ${term.rows}\r`)
+            termInited = true
           } else if (event.data.split(' ').length === 2 && event.data.split(' ')[0] === 'BTOF' && event.data.split(' ')[1] === 'wilkput') {
             // that.uploadFunc() // 这种方式不行 TODO.
             // 目前不能直接在ws里调用弹出上传文件的窗口，只能是显示上传按钮，用户再自己点击一下了。
@@ -355,18 +367,15 @@ export default {
           }
         }
         term.on('data', data => {
-          console.log('data =>', data)
+          // console.log('data =>', data)
           ws.send(data.toString())
-        })
-        // 不用看最开始设置的cols为100，这里实际值可能不是100。
-        term.on('resize', size => {
-          ws.send(`${INNER_CMD_PREFIX}stty cols ${size.cols} stty rows ${size.rows}\r`)
-          console.log('resize', [size.cols, size.rows])
         })
       }
     }
   },
   mounted() {
+    this.erd = elementResizeDetectorMaker()
+    this.erd.listenTo(this.$refs.termdiv, this.termResize)
     document.title = 'wilk主页'
     if (term === null) {
       this.freshTree()

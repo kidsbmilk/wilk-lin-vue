@@ -1,0 +1,147 @@
+html, body {
+    padding: 0;
+}
+
+#mainPage {
+    background: #E9F1F8;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 90%;
+    border: 0px #676767 dashed;
+}
+
+.tree-div {
+    width: 24%;
+    float: left;;
+}
+
+.file-div {
+    width: 24%;
+    float: left;;
+}
+
+.add-server-div {
+    margin-top: 2px;
+}
+
+.terminal-div {
+    width: 74%;
+    float: right;
+}
+
+.textarea{
+    text-align: left;
+    width: 80%;
+    min-height: 200px;
+    max-height: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 3px;
+    outline: 0;
+    border: 1px solid #a0b3d6;
+    font-size: 12px;
+    padding: 2px;
+    word-wrap: break-word;
+    overflow-x: hidden;
+    overflow-y: auto;
+    border-color: rgba(82, 168, 236, 0.8);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1), 0 0 8px rgba(82, 168, 236, 0.6);
+}
+
+/*
+	之前二维码不好识别，主要是因为这两个黑白的对比色不明显，也怪识别软件做的不强大。
+*/
+.span_black {
+    background-color: #000;
+    color: #000;
+    margin-left: 0px;
+    font-size: 12px;
+    /* display: inline-block;
+    margin-right: -3px; */
+}
+
+.span_white {
+    background-color: #9b9898;
+    color: #9b9898;
+    margin-left: 0px;
+    font-size: 12px;
+    /* display: inline-block;
+    margin-right: -3px; */
+}
+
+.span_red {
+    color: rgb(226, 73, 73);
+    margin-left: 0px;
+    /* font-size: 12px; */
+    /* display: inline-block;
+    margin-right: -3px; */
+}
+
+.span_green {
+    color: rgb(80, 165, 99);
+    margin-left: 0px;
+    font-size: 12px;
+    /* display: inline-block;
+    margin-right: -3px; */
+}
+
+.input {
+    display: block;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}
+
+.create-user-input {
+    background-color: #ffffff;
+    width: 30%;
+    height: 40px;
+    border: 1px solid rgb(49, 38, 38);
+    outline: 0;
+    font-size: 12px;
+    color: #333;
+    padding: 0 12px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+.create-server-input {
+    background-color: #ffffff;
+    height: 40px;
+    width: 80%;
+    border: 1px solid rgb(49, 38, 38);
+    outline: 0;
+    font-size: 12px;
+    color: #333;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+.create-user-select {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.create-user-select select {
+    display: inline-block;
+    width: 45%;
+    margin-right: 0px;
+}
+
+.create-user-select span {
+    text-align: left;
+    display: inline-block;
+    width: 45%;
+    margin-left: 0px;
+}

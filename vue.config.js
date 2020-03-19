@@ -24,6 +24,9 @@ module.exports = {
   },
   configureWebpack: {
     resolve: {
+      alias: {
+          vue$: "vue/dist/vue.esm.js", //加上这一句
+      },
       extensions: ['.js', '.json', '.vue', '.scss', '.html'],
     },
   },

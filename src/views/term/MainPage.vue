@@ -68,6 +68,7 @@ import * as attach from 'xterm/lib/addons/attach/attach'
 import 'xterm/dist/xterm.css'
 import treePage from './TreePage.vue'
 import 'element-ui/lib/theme-chalk/index.css'// element-ui的css
+import wilkTerm from '@/models/wilkterm'
 
 Terminal.applyAddon(fit)
 Terminal.applyAddon(attach)
@@ -110,14 +111,6 @@ export default {
   //   }
   // },
   methods: {
-    solveLoginRedirection(res) {
-      console.log(`solve redict: ${res.data}`)
-      if (res != null && res.data.code !== 0 && res.data.desc === 'login') {
-        this.$cookies.set('status', null)
-        term = null
-        this.$router.push('/loginpage')
-      }
-    },
     handleDownLoad() {
       // window.location.href = '/wilk/file/download?fileName=' + this.form.fileName
       // 判断文件名是否为空，弹窗提示 TODO.
@@ -127,7 +120,6 @@ export default {
         responseType: 'blob'
       })
         .then(res => {
-          this.solveLoginRedirection(res)
           const blob = new Blob([res.data])
           const downloadElement = document.createElement('a')
           const href = window.URL.createObjectURL(blob) // 创建下载的链接
@@ -211,7 +203,6 @@ export default {
         data
       )
         .then(res => {
-          this.solveLoginRedirection(res)
           this.message = res.data.result
           this.freshTree()
         })
@@ -237,7 +228,6 @@ export default {
         data
       )
         .then(res => {
-          this.solveLoginRedirection(res)
           this.message = res.data.result
           this.showAddfolder = false
           this.freshTree()
@@ -269,7 +259,6 @@ export default {
         data
       )
         .then(res => {
-          this.solveLoginRedirection(res)
           this.message = res.data.result
           this.showAddCmd = false
           this.freshTree()
@@ -285,26 +274,24 @@ export default {
     cancelCmd() {
       this.showAddCmd = false
     },
-    freshTree() {
+    async freshTree() {
       // 所有请求都在调用前先判断登录标记是否已invalid，我这个项目的前端请求封装不好 TODO.
       // this.uploadFunc() // 这个倒是可以，只是放mounted里的ws下就调用不了了。
       console.log('freshTree')
-      this.$axios.get('/wilk/server/getserverandcmd')
-        .then(res => {
-          console.log(res)
-          this.solveLoginRedirection(res)
-          if (res.data.result.length === 0) {
-            this.isShowAddButton = true
-          } else {
-            this.ztreeDataSourceList = res.data.result
-          }
-          if (term === null) {
-            this.initTerminal()
-          }
-        })
-        .catch(res => {
-          console.log(res.data)
-        })
+      const res = await wilkTerm.freshTree('server/getserverandcmd')
+      if (res.code === 0) {
+        console.log(res)
+        if (res.result.length === 0) {
+          this.isShowAddButton = true
+        } else {
+          this.ztreeDataSourceList = res.result
+        }
+        if (term === null) {
+          this.initTerminal()
+        }
+      } else {
+        console.log(res.desc)
+      }
     },
     uploadFunc() {
       console.log('click upload')
@@ -382,11 +369,7 @@ export default {
   mounted() {
     document.title = 'wilk主页'
     // 因为没有退出并清cookies的操作，所以下面的判断目前没用
-    if (!this.$cookies.isKey('status') || this.$cookies.get('status') !== 'logined') {
-      this.$router.replace('/loginpage')
-    } else {
-      this.freshTree() // 这个请求会对返回进行处理，如果没登录就跳到登录页
-    }
+    this.freshTree() // 这个请求会对返回进行处理，如果没登录就跳到登录页
   }
 }
 </script>

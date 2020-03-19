@@ -1,6 +1,7 @@
 import '@babel/polyfill'
 import Vue from 'vue'
 import ElementUI from 'element-ui'
+import VueContextMenu from 'vue-contextmenu'
 
 import '@/lin/mixin'
 import '@/lin/filter'
@@ -22,6 +23,7 @@ import 'element-ui/lib/theme-chalk/display.css'
 
 Vue.config.productionTip = false
 
+Vue.use(VueContextMenu)
 Vue.use(ElementUI)
 
 Vue.component(CollapseTransition.name, CollapseTransition)

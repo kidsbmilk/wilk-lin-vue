@@ -722,7 +722,7 @@ export default{
         }
       },
       /* eslint-disable max-len */
-      template: `<li :class="liClassVal" @contextmenu = 'zzcontextmenuClick'>
+      template: `<li :class="liClassVal">
         <span :class="spanClassVal" @click='open(model)'></span>
         <a  @mouseenter='enterFunc(model)' @mouseleave='leaveFunc(model)'  @contextmenu.prevent='cxtmenufunc(model)'>
             <span :class="{loadSyncNode:model.loadNode==1}" v-if='model.loadNode==1'></span>

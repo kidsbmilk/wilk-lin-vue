@@ -27,6 +27,17 @@ let homeRouter = [
     // permission: ['查询所有日志'],
   },
   {
+    title: '终端',
+    type: 'view',
+    name: Symbol('term'),
+    route: '/term',
+    filePath: 'views/term/MainPage.vue',
+    inNav: true,
+    icon: 'iconfont icon-rizhiguanli',
+    order: 2,
+    // permission: ['查询所有日志'],
+  },
+  {
     title: '404',
     type: 'view',
     name: Symbol('404'),

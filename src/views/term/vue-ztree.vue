@@ -372,7 +372,6 @@ ul.ztree.zTreeDragUL {
 </template>
 
 <script>
-import Vue from 'vue'
 /* eslint-disable no-prototype-builtins */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable prefer-template */
@@ -743,9 +742,7 @@ export default{
     this.initTreeData()
   },
   mounted() {
-    Vue.nextTick(() => {
-      this.initTreeData()
-    })
+    this.initTreeData()
   }
 }
 </script>

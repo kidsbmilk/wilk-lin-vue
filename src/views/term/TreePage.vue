@@ -32,7 +32,7 @@ body {
 </template>
 
 <script>
-import vueZtree from 'vue-ztree.vue'
+import vueZtree from './vue-ztree.vue'
 
 export default {
   name: 'TreePage',

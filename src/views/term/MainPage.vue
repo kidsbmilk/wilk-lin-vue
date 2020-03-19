@@ -66,12 +66,8 @@ import { Terminal } from 'xterm'
 import * as fit from 'xterm/lib/addons/fit/fit'
 import * as attach from 'xterm/lib/addons/attach/attach'
 import 'xterm/dist/xterm.css'
-import treePage from 'TreePage.vue'
-import ElementUI from 'element-ui' // element-ui的全部组件
+import treePage from './TreePage.vue'
 import 'element-ui/lib/theme-chalk/index.css'// element-ui的css
-import Vue from 'vue'
-
-Vue.use(ElementUI) // 使用elementUI
 
 Terminal.applyAddon(fit)
 Terminal.applyAddon(attach)
@@ -335,7 +331,7 @@ export default {
         term.open(document.getElementById('terminal'))
         term.fit()
         // 如果是组装命令，可以用JSON.stringify来分隔命令跟参数，后端容易做判断。TODO.
-        ws.onerror = function () {
+        ws.onerror = () => {
           console.log('connect error.')
         }
         // eslint-disable-next-line
@@ -359,7 +355,7 @@ export default {
             lastCmdHistory = event.data
           }
         }
-        term.textarea.onkeydown = function (e) {
+        term.textarea.onkeydown = e => {
           // https://www.cnblogs.com/gygg/p/11359598.html
           // https://zhidao.baidu.com/question/6865495.html
           // http://www.51hei.com/bbs/dpj-139731-1.html

@@ -141,7 +141,7 @@ export default class Admin {
   // 更新、设置权限
   static async dispatchAuths(group_id, auths) {
     const groupId = group_id
-    const res = await post('admin/group/auth/dispatch', {
+    const res = await post('admin/group/auth/add', {
       groupId,
       auths,
     })

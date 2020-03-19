@@ -19,8 +19,9 @@
             <ul class="permissions-ul">
               <li class="permissions-li" v-for="item in auth" :key="item.id">
                 <el-checkbox
+                  :id="item.id"
                   :label="item.name"
-                  @change="singleCheck($event, item.id, moduleName)"
+                  @change="singleCheck($event, item.name, moduleName)"
                 ></el-checkbox>
               </li>
             </ul>
@@ -50,21 +51,21 @@ export default {
     // 获取全部权限
     async getAllAuths() {
       const restemp = await Admin.getAllAuths()
-      this.allAuths = restemp.result
+      this.allAuths = restemp.result // 这是一个map结构，key是组名，value是权限列表
     },
     // 获取分组权限
     async getGroupAuths() {
       this.auths = [] // 父组件 重置
       const restemp = await Admin.getAllAuths()
-      this.allAuths = restemp.result
+      this.allAuths = restemp.result // 这是一个map结构，key是组名，value是权限列表
       // 通过判断有没有传入id，来判断当前页面是添加分组还是编辑分组
       if (this.id) {
         const res = await Admin.getOneGroup(this.id)
         // 获取分组所拥有的权限
-        /* eslint-disable */
-        // res = JSON.parse(JSON.stringify(res)) // 去除__ob__
-        for (let i = 0; i < res.auths.length; i++) {
-          this.auths.push(res.auths[i])
+        for (const key in res) {
+          for (let j = 0; j < res[key].length; j++) {
+            this.auths.push(res[key][j].name)
+          }
         }
         this.$emit('updateCacheAuths', this.auths)
         // 检查module状态是否需要选中
@@ -77,7 +78,11 @@ export default {
     },
     // 弹窗打开时，判断某一分类权限是否全部选中
     initModuleCheck(moduleName) {
-      const currentModuleChildrenArr = Object.keys(this.allAuths[moduleName])
+      const currentModuleChildrenArrTemp = Object.values(this.allAuths[moduleName])
+      let currentModuleChildrenArr = []
+      for (let i = 0; i < currentModuleChildrenArrTemp.length; i++) {
+        currentModuleChildrenArr.push(currentModuleChildrenArrTemp[i].name)
+      }
       const intersect = Utils.getIntersect(currentModuleChildrenArr, this.auths)
       // 全选
       if (intersect.length === currentModuleChildrenArr.length) {
@@ -89,7 +94,10 @@ export default {
       }
     },
     moduleCheck(checked, auth, moduleName) {
-      const authArr = Object.keys(auth)
+      let authArr = []
+      for(let i = 0; i < auth.length; i ++) {
+        authArr.push(auth[i].name)
+      }
       if (checked) {
         if (this.halfAuths.indexOf(moduleName) > -1) {
           this.halfAuths.splice(this.halfAuths.indexOf(moduleName), 1)
@@ -104,7 +112,11 @@ export default {
       this.$emit('updateAuths', this.auths)
     },
     singleCheck(checked, singleAuth, moduleName) {
-      const currentModuleChildrenArr = Object.keys(this.allAuths[moduleName])
+      const currentModuleChildrenArrTemp = Object.values(this.allAuths[moduleName])
+      let currentModuleChildrenArr = []
+      for (let i = 0; i < currentModuleChildrenArrTemp.length; i++) {
+          currentModuleChildrenArr.push(currentModuleChildrenArrTemp[i].name)
+      }
       const intersect = Utils.getIntersect(currentModuleChildrenArr, this.auths)
       if (intersect.length === currentModuleChildrenArr.length) {
         if (this.halfAuths.indexOf(moduleName) > -1) {
@@ -164,7 +176,7 @@ export default {
     .necessary {
       color: #e46a76;
       font-size: 14px;
-      font-weight: 500px;
+      font-weight: 500;
       margin-right: 5px;
       font-size: 16px;
     }

@@ -1,6 +1,7 @@
 <template>
   <div class="backTop" :style="{ right: right + 'px', bottom: bottom + 'px' }" v-if="showBackTop">
-    <i class="iconfont icon-xsaaa" :style="{ fontSize: fontSize + 'px' }" @click="backTop"></i>
+    <!--解决终端页面下返回顶部图标背景与边框对不齐的问题，这里直接写到style里了，后面需要改成灵活样式的 TODO.-->
+    <i class="iconfont icon-xsaaa" :style="{ fontSize: fontSize + 'px', position: 'absolute', width: '22px', right: '6px' }" @click="backTop"></i>
   </div>
 </template>
 <!--返回顶部-->

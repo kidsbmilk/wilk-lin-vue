@@ -114,7 +114,7 @@ _axios.interceptors.response.use(
     // console.log(res.data)
     // let { error_code, msg } = res.data // eslint-disable-line
     let { code, result, desc, reqId } = res.data // eslint-disable-line
-    let message = '' // 错误提示
+    let message = desc // 错误提示
     if (res.status.toString().charAt(0) === '2') {
       return res.data
     }
@@ -145,7 +145,10 @@ _axios.interceptors.response.use(
         }
       }
       if (code !== 0) {
-        this.$message.error(desc)
+        Vue.prototype.$message({
+          message,
+          type: 'error',
+        })
         return
       }
       // 本次请求添加 params 参数：handleError 为 true，用户自己try catch，框架不做处理
@@ -187,7 +190,7 @@ _axios.interceptors.response.use(
     }
 
     // 判断请求超时
-    if (error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1) {
+    if (error.code === 'ECONNABORTED' && error.desc.indexOf('timeout') !== -1) {
       Vue.prototype.$message({
         type: 'warning',
         message: '请求超时',

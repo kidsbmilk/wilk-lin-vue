@@ -12,7 +12,6 @@
           <input class="create-server-input" ref='serverValue' placeholder="请输入服务器值，作为第一条命令" maxlength="255">
           <button v-on:click="addServer">确定</button>
           <button v-on:click="cancel">取消</button>
-          <span> {{message}} </span>
         </div>
         <div v-if="showAddCmd" class = "add-cmd-div">
           <input class="create-server-input" ref='name' placeholder="请输入命令名" maxlength="255">
@@ -28,7 +27,6 @@
           <button v-on:click="addCmd">增加命令</button>
           <button v-on:click="cancelCmd">取消</button>
           <br>
-          <span> {{message}} </span>
         </div>
       </div>
       <div class = "file-div" v-show="showFile">
@@ -91,7 +89,7 @@ export default {
       form: {
         fileName: '',
       },
-      uploadUrl: '/wilk/file/upload',
+      uploadUrl: '/file/upload',
       fileList: [],
       showAddfolder: false,
       showAddCmd: false,
@@ -100,7 +98,6 @@ export default {
       showFileDownload: false,
       showFileUpload: false,
       isShowAddButton: false,
-      message: '',
       msg: 'Hello Vue-Ztree-2.0!',
       ztreeDataSourceList: []
     }
@@ -114,7 +111,7 @@ export default {
   // },
   methods: {
     async handleDownLoad() {
-      // window.location.href = '/wilk/file/download?fileName=' + this.form.fileName
+      // window.location.href = '/file/download?fileName=' + this.form.fileName
       // 判断文件名是否为空，弹窗提示 TODO.
       const res = await wilkTerm.fileDownload(this.form.fileName)
       const blob = new Blob([res])
@@ -138,7 +135,7 @@ export default {
       return this.$confirm(`确定移除 ${file.name}？`)
     },
     // eslint-disable-next-line
-	handleUploadError(error, file) {
+	  handleUploadError(error, file) {
       this.$notify.error({
         title: 'error',
         message: `上传出错:${error}`,
@@ -148,7 +145,7 @@ export default {
     },
     // eslint-disable-next-line
     handleBeforeUpload(file) {
-      this.uploadUrl = '/wilk/file/upload'
+      this.uploadUrl = '/file/upload'
     },
     submitUpload() {
       this.showFileUpload = false
@@ -186,21 +183,21 @@ export default {
       } else {
         res = await wilkTerm.deleteServer(nodeId)
       }
-      this.message = res.result
+      this.$message.success(res.result)
       this.freshTree()
     },
     async addServer() {
       console.log('add server')
       if (this.$refs.serverName.value === '') {
-        this.message = '命令名不能为空'
+        this.$message.error('命令名不能为空')
         return
       }
       if (this.$refs.serverValue.value === '') {
-        this.message = '命令内容不能为空'
+        this.$message.error('命令内容不能为空')
         return
       }
       const res = await wilkTerm.addServer(this.$refs.serverName.value, this.$refs.serverValue.value)
-      this.message = res.result
+      this.$message.success(res.result)
       this.showAddfolder = false
       this.freshTree()
     },
@@ -209,11 +206,11 @@ export default {
         console.log(nodeModelTp.id)
       }
       if (this.$refs.name.value === '') {
-        this.message = '命令名不能为空'
+        this.$message.error('命令名不能为空')
         return
       }
       if (this.$refs.value.value === '') {
-        this.message = '命令内容不能为空'
+        this.$message.error('命令内容不能为空')
         return
       }
       const res = await wilkTerm.addCmd(
@@ -223,7 +220,7 @@ export default {
         parseInt(this.$refs.cmdType.value, 10),
         nodeModelTp.id
       )
-      this.message = res.result
+      this.$message.success(res.result)
       this.showAddCmd = false
       this.freshTree()
     },
@@ -275,7 +272,7 @@ export default {
           scrollback: 1000,
           tabStopWidth: 4 }
       )
-      ws = new WebSocket('ws://localhost/wilk/websocket')
+      ws = new WebSocket('ws://localhost:8088/websocket')
       wsGlobal = ws
       // eslint-disable-next-line
 	  ws.onopen = function (event) {

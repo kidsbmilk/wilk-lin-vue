@@ -113,32 +113,22 @@ export default {
   //   }
   // },
   methods: {
-    handleDownLoad() {
+    async handleDownLoad() {
       // window.location.href = '/wilk/file/download?fileName=' + this.form.fileName
       // 判断文件名是否为空，弹窗提示 TODO.
-      this.$axios({
-        method: 'get',
-        url: `/file/download?fileName=${this.form.fileName}`,
-        responseType: 'blob'
-      })
-        .then(res => {
-          const blob = new Blob([res.data])
-          const downloadElement = document.createElement('a')
-          const href = window.URL.createObjectURL(blob) // 创建下载的链接
-          downloadElement.href = href
-          downloadElement.download = this.form.fileName // 下载后文件名
-          document.body.appendChild(downloadElement)
-          downloadElement.click() // 点击下载
-          document.body.removeChild(downloadElement) // 下载完成移除元素
-          window.URL.revokeObjectURL(href) // 释放掉blob对象
-          wsGlobal.send(`${INNER_CMD_PREFIX}wilkget done ${this.form.fileName}`)
-          this.form.fileName = ''
-          this.showFileDownload = false
-        })
-        .catch(res => {
-          this.showFileDownload = false
-          console.log(res.data)
-        })
+      const res = await wilkTerm.fileDownload(this.form.fileName)
+      const blob = new Blob([res])
+      const downloadElement = document.createElement('a')
+      const href = window.URL.createObjectURL(blob) // 创建下载的链接
+      downloadElement.href = href
+      downloadElement.download = this.form.fileName // 下载后文件名
+      document.body.appendChild(downloadElement)
+      downloadElement.click() // 点击下载
+      document.body.removeChild(downloadElement) // 下载完成移除元素
+      window.URL.revokeObjectURL(href) // 释放掉blob对象
+      wsGlobal.send(`${INNER_CMD_PREFIX}wilkget done ${this.form.fileName}`)
+      this.form.fileName = ''
+      this.showFileDownload = false
     },
     handleExceed(files, fileList) {
       this.$message.warning(`当前限制选择1个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
@@ -188,31 +178,18 @@ export default {
       this.showAddCmd = isShow
       nodeModelTp = nodeModel
     },
-    delCmdFunc(isChildren, nodeId, parentId) {
+    async delCmdFunc(isChildren, nodeId, parentId) {
       // console.log(`delCmdFunc: nodeId: ${nodeId}, parentId: ${parentId}`)
-      const data = new URLSearchParams()
-      let url = ''
+      let res = ''
       if (isChildren) {
-        url = '/wilk/cmd/delete'
-        data.append('cmdId', nodeId)
-        data.append('serverId', parentId)
+        res = await wilkTerm.deleteCmd(nodeId, parentId)
       } else {
-        url = '/wilk/server/delete'
-        data.append('serverId', nodeId)
+        res = await wilkTerm.deleteServer(nodeId)
       }
-      this.$axios.post(
-        url,
-        data
-      )
-        .then(res => {
-          this.message = res.data.result
-          this.freshTree()
-        })
-        .catch(res => {
-          console.log(res.data.result)
-        })
+      this.message = res.result
+      this.freshTree()
     },
-    addServer() {
+    async addServer() {
       console.log('add server')
       if (this.$refs.serverName.value === '') {
         this.message = '命令名不能为空'
@@ -222,23 +199,12 @@ export default {
         this.message = '命令内容不能为空'
         return
       }
-      const data = new URLSearchParams()
-      data.append('serverName', this.$refs.serverName.value)
-      data.append('serverValue', this.$refs.serverValue.value)
-      this.$axios.post(
-        '/wilk/server/add',
-        data
-      )
-        .then(res => {
-          this.message = res.data.result
-          this.showAddfolder = false
-          this.freshTree()
-        })
-        .catch(res => {
-          console.log(res.data.result)
-        })
+      const res = await wilkTerm.addServer(this.$refs.serverName.value, this.$refs.serverValue.value)
+      this.message = res.result
+      this.showAddfolder = false
+      this.freshTree()
     },
-    addCmd() {
+    async addCmd() {
       if (nodeModelTp != null) {
         console.log(nodeModelTp.id)
       }
@@ -250,24 +216,16 @@ export default {
         this.message = '命令内容不能为空'
         return
       }
-      const data = new URLSearchParams()
-      data.append('name', this.$refs.name.value)
-      data.append('value', this.$refs.value.value)
-      data.append('describtion', this.$refs.describtion.value)
-      data.append('cmdType', parseInt(this.$refs.cmdType.value, 10))
-      data.append('serverId', nodeModelTp.id)
-      this.$axios.post(
-        '/wilk/cmd/add',
-        data
+      const res = await wilkTerm.addCmd(
+        this.$refs.name.value,
+        this.$refs.value.value,
+        this.$refs.describtion.value,
+        parseInt(this.$refs.cmdType.value, 10),
+        nodeModelTp.id
       )
-        .then(res => {
-          this.message = res.data.result
-          this.showAddCmd = false
-          this.freshTree()
-        })
-        .catch(res => {
-          console.log(res.data.result)
-        })
+      this.message = res.result
+      this.showAddCmd = false
+      this.freshTree()
     },
     cancel() {
       this.showAddfolder = false
@@ -281,18 +239,14 @@ export default {
       // this.uploadFunc() // 这个倒是可以，只是放mounted里的ws下就调用不了了。
       // console.log('freshTree')
       const res = await wilkTerm.freshTree('server/getserverandcmd')
-      if (res.code === 0) {
-        // console.log(res)
-        if (res.result.length === 0) {
-          this.isShowAddButton = true
-        } else {
-          this.ztreeDataSourceList = res.result
-        }
-        if (term === null) {
-          this.initTerminal()
-        }
+      // console.log(res)
+      if (res.result.length === 0) {
+        this.isShowAddButton = true
       } else {
-        console.log(res.desc)
+        this.ztreeDataSourceList = res.result
+      }
+      if (term === null) {
+        this.initTerminal()
       }
     },
     uploadFunc() {

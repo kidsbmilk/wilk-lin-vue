@@ -144,6 +144,10 @@ _axios.interceptors.response.use(
           return
         }
       }
+      if (code !== 0) {
+        this.$message.error(desc)
+        return
+      }
       // 本次请求添加 params 参数：handleError 为 true，用户自己try catch，框架不做处理
       if (params && params.handleError) {
         reject(res)

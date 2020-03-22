@@ -1,5 +1,5 @@
 /* eslint-disable class-methods-use-this */
-import { get } from '@/lin/plugins/axios'
+import { get, post } from '@/lin/plugins/axios'
 
 // 我们通过 class 这样的语法糖使模型这个概念更加具象化，其优点：耦合性低、可维护性。
 class WilkTerm {
@@ -11,6 +11,45 @@ class WilkTerm {
   // 2. await 后面跟的是一个 Promise 对象
   async freshTree() {
     const res = await get('server/getserverandcmd')
+    return res
+  }
+
+  async deleteCmd(cmdId, serverId) {
+    const res = await get('cmd/delete', {
+      cmdId,
+      serverId
+    })
+    return res
+  }
+
+  async addCmd(name, value, describtion, cmdType, serverId) {
+    const res = await post('cmd/add', {
+      name, value, describtion, cmdType, serverId
+    })
+    return res
+  }
+
+  async deleteServer(serverId) {
+    const res = await get('server/delete', {
+      serverId
+    })
+    return res
+  }
+
+  async addServer(serverName, serverValue) {
+    const res = await get('server/add', {
+      serverName,
+      serverValue
+    })
+    return res
+  }
+
+  async fileDownload(fileName) {
+    const responseType = 'blob'
+    const res = await get('/file/download', {
+      fileName,
+      responseType
+    })
     return res
   }
 }

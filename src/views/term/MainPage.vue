@@ -7,12 +7,34 @@
       <div class='tree-div'>
         <tree-page :mytree="mytree" :showAdd="showAdd" :showAddCmdFunc="showAddCmdFunc" :delCmdFunc="delCmdFunc" :freshTree="freshTree" v-bind:ztreeDataSourceList="ztreeDataSourceList"></tree-page>
         <el-button v-if="isShowAddButton" @click="handleAddServerButton" size="small" type="primary">添加服务器</el-button>
-        <div v-if="showAddfolder" class = "add-server-div">
-          <input class="create-server-input" ref='serverName' placeholder="请输入服务器名，作为文件夹，不能重复" maxlength="255">
-          <input class="create-server-input" ref='serverValue' placeholder="请输入服务器值，作为第一条命令" maxlength="255">
-          <button v-on:click="addServer">确定</button>
-          <button v-on:click="cancel">取消</button>
-        </div>
+        <el-dialog
+          title = '添加服务器'
+          :append-to-body="true"
+          :visible.sync="showAddfolder"
+          :before-close="handleClose"
+          class="groupListInfoDialog"
+        >
+          <el-form
+            status-icon
+            v-if="showAddfolder"
+            ref="formAddFolder"
+            label-width="120px"
+            :model="formAddFolder"
+            label-position="labelPosition"
+            style="margin-left:-35px;margin-bottom:-35px;margin-top:15px;"
+          >
+            <el-form-item label="服务器名" prop="name">
+              <el-input size="medium" clearable v-model="formAddFolder.serverName" placeholder="请输入服务器名，作为文件夹，不能重复"></el-input>
+            </el-form-item>
+            <el-form-item label="服务器值" prop="value">
+              <el-input size="medium" clearable v-model="formAddFolder.serverValue" placeholder="请输入服务器值，作为第一条命令"></el-input>
+            </el-form-item>
+          </el-form>
+          <div slot="footer" class="dialog-footer" style="padding-left:5px;">
+            <el-button type="primary" @click="addServer">确 定</el-button>
+            <el-button @click="cancel">取消</el-button>
+          </div>
+        </el-dialog>
         <el-dialog
           title = '添加命令'
           :append-to-body="true"
@@ -51,7 +73,7 @@
             </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer" style="padding-left:5px;">
-            <el-button type="primary" @click="addCmd()">确 定</el-button>
+            <el-button type="primary" @click="addCmd">确 定</el-button>
             <el-button @click="cancelCmd">取消</el-button>
           </div>
         </el-dialog>
@@ -131,6 +153,10 @@ export default {
         value: '',
         describtion: '',
         cmdType: 0
+      },
+      formAddFolder: {
+        serverName: '',
+        serverValue: ''
       },
       uploadUrl: '/file/upload',
       fileList: [],
@@ -235,17 +261,21 @@ export default {
     },
     async addServer() {
       console.log('add server')
-      if (this.$refs.serverName.value === '') {
+      if (this.formAddFolder.serverName === '') {
         this.$message.error('命令名不能为空')
         return
       }
-      if (this.$refs.serverValue.value === '') {
+      if (this.formAddFolder.serverValue === '') {
         this.$message.error('命令内容不能为空')
         return
       }
-      const res = await wilkTerm.addServer(this.$refs.serverName.value, this.$refs.serverValue.value)
+      const res = await wilkTerm.addServer(this.formAddFolder.serverName, this.formAddFolder.serverValue)
       this.$message.success(res.result)
       this.showAddfolder = false
+      this.formAddFolder = {
+        serverName: '',
+        serverValue: ''
+      }
       this.freshTree()
     },
     async addCmd() {
@@ -281,6 +311,10 @@ export default {
       this.showAddfolder = false
       if (this.ztreeDataSourceList.length === 0) {
         this.isShowAddButton = true
+      }
+      this.formAddFolder = {
+        serverName: '',
+        serverValue: ''
       }
     },
     cancelCmd() {

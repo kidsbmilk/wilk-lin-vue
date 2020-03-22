@@ -13,21 +13,48 @@
           <button v-on:click="addServer">确定</button>
           <button v-on:click="cancel">取消</button>
         </div>
-        <div v-if="showAddCmd" class = "add-cmd-div">
-          <input class="create-server-input" ref='name' placeholder="请输入命令名" maxlength="255">
-          <input class="create-server-input" ref='value' placeholder="请输入命令内容" maxlength="255">
-          <input class="create-server-input" ref='describtion' placeholder="请输入命令描述" maxlength="255">
-          <div class='create-user-select'>
-            <span>命令类型: </span>
-            <select ref='cmdType'>
-              <option value = '0'>普通命令</option>
-              <option value = '1'>服务器地址</option>
-            </select>
+        <el-dialog
+          title = '添加命令'
+          :append-to-body="true"
+          :visible.sync="showAddCmd"
+          :before-close="handleClose"
+          class="groupListInfoDialog"
+        >
+          <el-form
+            status-icon
+            v-if="showAddCmd"
+            ref="formAddCmd"
+            label-width="120px"
+            :model="formAddCmd"
+            label-position="labelPosition"
+            style="margin-left:-35px;margin-bottom:-35px;margin-top:15px;"
+          >
+            <el-form-item label="命令名" prop="name">
+              <el-input size="medium" clearable v-model="formAddCmd.name"></el-input>
+            </el-form-item>
+            <el-form-item label="命令内容" prop="value">
+              <el-input size="medium" clearable v-model="formAddCmd.value"></el-input>
+            </el-form-item>
+            <el-form-item label="命令描述" prop="describtion">
+              <el-input size="medium" clearable v-model="formAddCmd.describtion"></el-input>
+            </el-form-item>
+            <el-form-item label="选择分组">
+              <el-select
+                size="medium"
+                filterable
+                v-model="formAddCmd.cmdType"
+                :disabled="cmdTypeList.length === 0"
+                placeholder="请选择分组"
+              >
+                <el-option v-for="item in cmdTypeList" :key="item.id" :label="item.name" :value="item.id"> </el-option>
+              </el-select>
+            </el-form-item>
+          </el-form>
+          <div slot="footer" class="dialog-footer" style="padding-left:5px;">
+            <el-button type="primary" @click="addCmd()">确 定</el-button>
+            <el-button @click="cancelCmd">取消</el-button>
           </div>
-          <button v-on:click="addCmd">增加命令</button>
-          <button v-on:click="cancelCmd">取消</button>
-          <br>
-        </div>
+        </el-dialog>
       </div>
       <div class = "file-div" v-show="showFile">
         <el-form :model="form">
@@ -89,6 +116,22 @@ export default {
       form: {
         fileName: '',
       },
+      cmdTypeList: [
+        {
+          id: 0,
+          name: '普通命令'
+        },
+        {
+          id: 1,
+          name: '服务器地址'
+        }
+      ],
+      formAddCmd: {
+        name: '',
+        value: '',
+        describtion: '',
+        cmdType: 0
+      },
       uploadUrl: '/file/upload',
       fileList: [],
       showAddfolder: false,
@@ -110,6 +153,10 @@ export default {
   //   }
   // },
   methods: {
+    // 弹框 右上角 X
+    handleClose(done) {
+      done()
+    },
     async handleDownLoad() {
       // window.location.href = '/file/download?fileName=' + this.form.fileName
       // 判断文件名是否为空，弹窗提示 TODO.
@@ -205,31 +252,45 @@ export default {
       if (nodeModelTp != null) {
         console.log(nodeModelTp.id)
       }
-      if (this.$refs.name.value === '') {
+      if (this.formAddCmd.name === '') {
         this.$message.error('命令名不能为空')
         return
       }
-      if (this.$refs.value.value === '') {
+      if (this.formAddCmd.value === '') {
         this.$message.error('命令内容不能为空')
         return
       }
       const res = await wilkTerm.addCmd(
-        this.$refs.name.value,
-        this.$refs.value.value,
-        this.$refs.describtion.value,
-        parseInt(this.$refs.cmdType.value, 10),
+        this.formAddCmd.name,
+        this.formAddCmd.value,
+        this.formAddCmd.describtion,
+        this.formAddCmd.cmdType,
         nodeModelTp.id
       )
       this.$message.success(res.result)
+      this.formAddCmd = {
+        name: '',
+        value: '',
+        describtion: '',
+        cmdType: 0
+      }
       this.showAddCmd = false
       this.freshTree()
     },
     cancel() {
       this.showAddfolder = false
-      this.isShowAddButton = true
+      if (this.ztreeDataSourceList.length === 0) {
+        this.isShowAddButton = true
+      }
     },
     cancelCmd() {
       this.showAddCmd = false
+      this.formAddCmd = {
+        name: '',
+        value: '',
+        describtion: '',
+        cmdType: 0
+      }
     },
     async freshTree() {
       // 所有请求都在调用前先判断登录标记是否已invalid，我这个项目的前端请求封装不好 TODO.

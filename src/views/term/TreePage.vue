@@ -149,7 +149,7 @@ export default {
       console.log(m.name)
       console.log(m.id)
       // eslint-disable-next-line
-      this.mytree('ZTREE_CMD_' + m.id) // 这个一定要加this
+      this.mytree(m, parent) // 这个一定要加this
     },
     // 右击事件
     // eslint-disable-next-line

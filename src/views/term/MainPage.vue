@@ -2,87 +2,86 @@
   <div id="mainPage" ref="termdiv">
     <el-tabs v-model="editableTabsValue" type="card" editable @edit="handleTabsEdit">
       <el-tab-pane
-        :key="item.id"
+        :key="item.tabName"
         v-for="(item, index) in termPaneInfoList"
-        :label="item.openedServerName === null ? index.toString() :
-        openedEachServerlen[item.openedServerName] === null ? item.openedServerName :
-        `${item.openedServerName}(${openedEachServerlen[item.openedServerName]})`"
+        :label="item.serverTitle === null ? item.id.toString() : item.serverTitle"
+        :name="item.tabName"
       >
         <div class='terminal-div'>
           <div :id="'terminal' + item.id"></div>
         </div>
         <div class='tree-div'>
-          <tree-page :mytree="str => mytree(str, termPaneInfoList[item.id])"
-                     :showAdd="isShow => showAdd(isShow, termPaneInfoList[item.id])"
-                     :showAddCmdFunc="(isShow, nodeModel) => showAddCmdFunc(isShow, nodeModel, termPaneInfoList[paneNowIndex])"
-                     :delCmdFunc="(isChildren, nodeId, parentId) => delCmdFunc(isChildren, nodeId, parentId, termPaneInfoList[paneNowIndex])"
-                     :freshTree="() => freshTree(termPaneInfoList[item.id])"
-                     v-bind:ztreeDataSourceList="termPaneInfoList[item.id].ztreeDataSourceList"></tree-page>
-          <el-button v-if="termPaneInfoList[item.id].isShowAddButton"
-                     @click="handleAddServerButton(termPaneInfoList[item.id])" size="small" type="primary">添加服务器</el-button>
+          <tree-page :mytree="(node, parent) => mytree(node, parent, termPaneInfoList[index])"
+                     :showAdd="isShow => showAdd(isShow, termPaneInfoList[index])"
+                     :showAddCmdFunc="(isShow, nodeModel) => showAddCmdFunc(isShow, nodeModel, termPaneInfoList[index])"
+                     :delCmdFunc="(isChildren, nodeId, parentId) => delCmdFunc(isChildren, nodeId, parentId, termPaneInfoList[index])"
+                     :freshTree="() => freshTree(termPaneInfoList[index])"
+                     v-bind:ztreeDataSourceList="termPaneInfoList[index].ztreeDataSourceList"></tree-page>
+          <el-button v-if="termPaneInfoList[index].isShowAddButton"
+                     @click="handleAddServerButton(termPaneInfoList[index])" size="small" type="primary">添加服务器</el-button>
           <el-dialog
             title = '添加服务器'
             :append-to-body="true"
-            :visible.sync="termPaneInfoList[item.id].showAddfolder"
+            :visible.sync="termPaneInfoList[index].showAddfolder"
             :before-close="handleClose"
             class="groupListInfoDialog"
           >
             <el-form
               status-icon
-              v-if="termPaneInfoList[item.id].showAddfolder"
-              ref="termPaneInfoList[item.id].formAddFolder"
+              v-if="termPaneInfoList[index].showAddfolder"
+              ref="termPaneInfoList[index].formAddFolder"
               label-width="120px"
-              :model="termPaneInfoList[item.id].formAddFolder"
+              :model="termPaneInfoList[index].formAddFolder"
               label-position="labelPosition"
               style="margin-left:-35px;margin-bottom:-35px;margin-top:15px;"
             >
               <el-form-item label="服务器名" prop="name">
                 <el-input size="medium" clearable
-                          v-model="termPaneInfoList[item.id].formAddFolder.serverName" placeholder="请输入服务器名，作为文件夹，不能重复"></el-input>
+                          v-model="termPaneInfoList[index].formAddFolder.serverName" placeholder="请输入服务器名，作为文件夹，不能重复"></el-input>
               </el-form-item>
               <el-form-item label="服务器值" prop="value">
                 <el-input size="medium"
-                          clearable v-model="termPaneInfoList[item.id].formAddFolder.serverValue" placeholder="请输入服务器值，作为第一条命令"></el-input>
+                          clearable v-model="termPaneInfoList[index].formAddFolder.serverValue" placeholder="请输入服务器值，作为第一条命令"></el-input>
               </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer" style="padding-left:5px;">
-              <el-button type="primary" @click="addServer(termPaneInfoList[item.id])">确 定</el-button>
-              <el-button @click="cancel(termPaneInfoList[item.id])">取消</el-button>
+              <el-button type="primary" @click="addServer(termPaneInfoList[index])">确 定</el-button>
+              <el-button @click="cancel(termPaneInfoList[index])">取消</el-button>
             </div>
           </el-dialog>
           <el-dialog
             title = '添加命令'
             :append-to-body="true"
-            :visible.sync="termPaneInfoList[item.id].showAddCmd"
+            :visible.sync="termPaneInfoList[index].showAddCmd"
             :before-close="handleClose"
             class="groupListInfoDialog"
           >
             <el-form
               status-icon
-              v-if="termPaneInfoList[item.id].showAddCmd"
-              ref="termPaneInfoList[item.id].formAddCmd"
+              v-if="termPaneInfoList[index].showAddCmd"
+              ref="termPaneInfoList[index].formAddCmd"
               label-width="120px"
-              :model="termPaneInfoList[item.id].formAddCmd"
+              :model="termPaneInfoList[index].formAddCmd"
               label-position="labelPosition"
               style="margin-left:-35px;margin-bottom:-35px;margin-top:15px;"
             >
               <el-form-item label="命令名" prop="name">
                 <el-input size="medium" clearable
-                          v-model="termPaneInfoList[item.id].formAddCmd.name"></el-input>
+                          v-model="termPaneInfoList[index].formAddCmd.name"></el-input>
               </el-form-item>
               <el-form-item label="命令内容" prop="value">
                 <el-input size="medium" clearable
-                          v-model="termPaneInfoList[item.id].formAddCmd.value"></el-input>
+                          v-model="termPaneInfoList[index].formAddCmd.value"></el-input>
               </el-form-item>
               <el-form-item label="命令描述" prop="describtion">
                 <el-input size="medium" clearable
-                          v-model="termPaneInfoList[item.id].formAddCmd.describtion"></el-input>
+                          v-model="termPaneInfoList[index].formAddCmd.describtion"></el-input>
               </el-form-item>
               <el-form-item label="选择分组">
                 <el-select
                   size="medium"
                   filterable
-                  v-model="termPaneInfoList[item.id].formAddCmd.cmdType"
+                  v-model="termPaneInfoList[index].formAddCmd.cmdType"
                   :disabled="cmdTypeList.length === 0"
                   placeholder="请选择分组"
                 >
@@ -91,30 +90,30 @@
               </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer" style="padding-left:5px;">
-              <el-button type="primary" @click="addCmd(termPaneInfoList[item.id])">确 定</el-button>
-              <el-button @click="cancelCmd(termPaneInfoList[item.id])">取消</el-button>
+              <el-button type="primary" @click="addCmd(termPaneInfoList[index])">确 定</el-button>
+              <el-button @click="cancelCmd(termPaneInfoList[index])">取消</el-button>
             </div>
           </el-dialog>
         </div>
-        <div class = "file-div" v-show="termPaneInfoList[item.id].showFile">
-          <el-form :model="termPaneInfoList[item.id].formFile">
-            <div  v-show="termPaneInfoList[item.id].showFileDownload">
-              <div v-show="termPaneInfoList[item.id].showFileDownloadInput">
+        <div class = "file-div" v-show="termPaneInfoList[index].showFile">
+          <el-form :model="termPaneInfoList[index].formFile">
+            <div  v-show="termPaneInfoList[index].showFileDownload">
+              <div v-show="termPaneInfoList[index].showFileDownloadInput">
                 <el-form-item label="请输入文件名" required>
-                  <el-input v-model="termPaneInfoList[item.id].formFile.fileName" auto-complete="off" class="el-col-width" required></el-input>
+                  <el-input v-model="termPaneInfoList[index].formFile.fileName" auto-complete="off" class="el-col-width" required></el-input>
                 </el-form-item>
               </div>
               <el-form-item>
-                <el-button size="small" type="primary" @click="handleDownLoad(termPaneInfoList[item.id])">下载</el-button>
+                <el-button size="small" type="primary" @click="handleDownLoad(termPaneInfoList[index])">下载</el-button>
               </el-form-item>
             </div>
-            <div  v-show="termPaneInfoList[item.id].showFileUpload">
+            <div  v-show="termPaneInfoList[index].showFileUpload">
               <el-form-item>
                 <!-- 目前一次仅让上传一个文件 TODO. -->
                 <el-upload class="upload-demo" :action="'/file/upload'" :on-error="handleUploadError" :before-remove="beforeRemove" multiple :limit="1"
-                :on-exceed="handleExceed" :file-list="termPaneInfoList[item.id].fileList"
-                :on-success="(response, file, fileList) => handleUploadSuccess(response, file, fileList, termPaneInfoList[paneNowIndex])" >
-                  <el-button size="small" type="primary" @click="submitUpload((termPaneInfoList[item.id]))">点击上传</el-button>
+                :on-exceed="handleExceed" :file-list="termPaneInfoList[index].fileList"
+                :on-success="(response, file, fileList) => handleUploadSuccess(response, file, fileList, termPaneInfoList[index])" >
+                  <el-button size="small" type="primary" @click="submitUpload((termPaneInfoList[index]))">点击上传</el-button>
                   <!-- <div slot="tip" class="el-upload__tip">一次文件不超过50MB</div> -->
                 </el-upload>
               </el-form-item>
@@ -142,6 +141,7 @@ Terminal.applyAddon(fit)
 Terminal.applyAddon(attach)
 const INNER_CMD_PREFIX = 'WILK_IN_'
 const defaultPaneInfo = new TermPaneInfo()
+let maxTermSize = 1
 // https://www.cnblogs.com/freefei/p/8976802.html
 
 export default {
@@ -151,7 +151,6 @@ export default {
     return {
       editableTabsValue: '0',
       openedEachServerlen: {},
-      paneNowIndex: 0,
       termPaneInfoList: [defaultPaneInfo],
       cmdTypeList: [
         {
@@ -168,30 +167,27 @@ export default {
   methods: {
     async handleTabsEdit(targetName, action) { // eslint-disable-line
       if (action === 'add') {
-        this.editableTabsValue = `${this.termPaneInfoList.length}`
         const paneInfo = new TermPaneInfo()
-        paneInfo.id = this.termPaneInfoList.length
+        paneInfo.id = maxTermSize
+        maxTermSize += 1
+        paneInfo.tabName = `${paneInfo.id}`
+        this.editableTabsValue = paneInfo.tabName
         const res = await this.freshTree(paneInfo)
         console.log(res.result.length)
         this.termPaneInfoList.push(paneInfo)
-        this.paneNowIndex = paneInfo.id
       }
       if (action === 'remove') {
-        const tabs = this.termPaneInfoList
-        let activeName = this.editableTabsValue
-        if (activeName === targetName) {
-          tabs.forEach((tab, index) => {
-            if (tab.name === targetName) {
-              const nextTab = tabs[index + 1] || tabs[index - 1]
+        if (this.editableTabsValue === targetName) {
+          this.termPaneInfoList.forEach((tab, index) => {
+            if (tab.tabName === targetName) {
+              const nextTab = this.termPaneInfoList[index + 1] || this.termPaneInfoList[index - 1]
               if (nextTab) {
-                activeName = nextTab.name
+                this.editableTabsValue = nextTab.tabName
               }
             }
           })
         }
-
-        this.editableTabsValue = activeName
-        this.termPaneInfoList = tabs.filter(tab => tab.name !== targetName)
+        this.termPaneInfoList = this.termPaneInfoList.filter(tab => tab.tabName !== targetName)
       }
     },
     // 弹框 右上角 X
@@ -243,9 +239,20 @@ export default {
       paneInfo.formFile.fileName = ''
       paneInfo.fileList = []
     },
-    mytree(str, paneInfo) {
-      console.log('mytree')
-      paneInfo.ws.send(str)
+    mytree(node, parent, paneInfo) {
+      if (paneInfo.openedServerName === null) {
+        paneInfo.openedServerName = parent.name
+        paneInfo.serverTitle = paneInfo.openedServerName
+        if (this.openedEachServerlen[paneInfo.openedServerName] === null
+            || this.openedEachServerlen[paneInfo.openedServerName] === undefined) {
+          this.openedEachServerlen[paneInfo.openedServerName] = 1
+        } else {
+          paneInfo.serverTitle = `${paneInfo.openedServerName}(${this.openedEachServerlen[paneInfo.openedServerName]})`
+          this.openedEachServerlen[paneInfo.openedServerName] = this.openedEachServerlen[paneInfo.openedServerName] + 1
+        }
+      }
+      // console.log('mytree')
+      paneInfo.ws.send(`ZTREE_CMD_${node.id}`)
     },
     handleAddServerButton(paneInfo) {
       paneInfo.isShowAddButton = false

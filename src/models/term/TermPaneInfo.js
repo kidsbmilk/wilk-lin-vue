@@ -2,6 +2,10 @@
 export default class TermPaneInfo {
   id = 0
 
+  tabName = '0'
+
+  valid = true
+
   // 目录树相关
   nodeModelTp = null
 
@@ -49,4 +53,6 @@ export default class TermPaneInfo {
   termInited = false
 
   openedServerName = null
+
+  serverTitle = null
 }

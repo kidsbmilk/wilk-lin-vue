@@ -1,5 +1,5 @@
 <template>
-  <div id="mainPage" ref="termdiv">
+  <div ref="termdiv">
     <el-tabs v-model="editableTabsValue" type="card" editable @edit="handleTabsEdit">
       <el-tab-pane
         :key="item.tabName"

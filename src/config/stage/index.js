@@ -1,5 +1,4 @@
 import adminConfig from './admin'
-import bookConfig from './book' // 引入图书管理路由文件
 import pluginsConfig from './plugins'
 import Utils from '@/lin/utils/util'
 
@@ -15,17 +14,17 @@ let homeRouter = [
     icon: 'iconfont icon-iconset0103',
     order: 0,
   },
-  {
-    title: '日志管理',
-    type: 'view',
-    name: Symbol('log'),
-    route: '/log',
-    filePath: 'views/log/Log.vue',
-    inNav: true,
-    icon: 'iconfont icon-rizhiguanli',
-    order: 1,
-    // permission: ['查询所有日志'],
-  },
+  // {
+  //   title: '日志管理',
+  //   type: 'view',
+  //   name: Symbol('log'),
+  //   route: '/log',
+  //   filePath: 'views/log/Log.vue',
+  //   inNav: true,
+  //   icon: 'iconfont icon-rizhiguanli',
+  //   order: 1,
+  //   // permission: ['查询所有日志'],
+  // },
   {
     title: '终端',
     type: 'view',
@@ -39,6 +38,17 @@ let homeRouter = [
     // permission: ['查询所有日志'],
   },
   {
+    title: '命令执行记录管理',
+    type: 'view',
+    name: Symbol('executelog'),
+    route: '/executelog',
+    filePath: 'views/execute-log/ExecuteLog.vue',
+    inNav: true,
+    icon: 'iconfont icon-rizhiguanli',
+    order: 3,
+    // permission: ['查询所有日志'],
+  },
+  {
     title: '404',
     type: 'view',
     name: Symbol('404'),
@@ -47,7 +57,6 @@ let homeRouter = [
     inNav: false,
     icon: 'iconfont icon-rizhiguanli',
   },
-  bookConfig,
   adminConfig,
 ]
 

@@ -2,17 +2,17 @@
   <div class="log">
     <sticky-top>
       <div class="log-header">
-        <div class="header-left"><p class="title">日志信息</p></div>
-        <div class="header-right" v-auth="'搜索日志'">
+        <div class="header-left"><p class="title">命令执行记录信息</p></div>
+        <div class="header-right" v-auth="'搜索记录'">
           <lin-search @query="onQueryChange" ref="searchKeyword" />
-          <el-dropdown size="medium" style="margin: 0 10px;" @command="handleCommand" v-auth="'查询日志记录的用户'">
+          <el-dropdown size="medium" style="margin: 0 10px;" @command="handleCommand" v-auth="'查询记录的用户'">
             <el-button size="medium">
               {{ searchUser ? searchUser : '全部人员' }} <i class="el-icon-arrow-down el-icon--right"></i>
             </el-button>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item :command="['全部人员']">全部人员</el-dropdown-item>
-              <el-dropdown-item icon="el-icon-user-solid" v-for="(user, index) in users" :key="index" :command="[user]"
-                >{{ user }}
+              <el-dropdown-item :command="['全部人员', 0]">全部人员</el-dropdown-item>
+              <el-dropdown-item icon="el-icon-user-solid" v-for="(user, index) in users" :key="index" :command="[user.username, user.id]"
+                >{{ user.username }}
               </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
@@ -25,9 +25,9 @@
       <div class="search" v-if="keyword">
         <p class="search-tip">
           搜索“<span class="search-keyword">{{ keyword }}</span
-          >”， 找到 <span class="search-num">{{ totalCount }}</span> 条日志信息
+          >”， 找到 <span class="search-num">{{ totalCount }}</span> 条记录信息
         </p>
-        <button class="search-back" @click="backInit">返回全部日志</button>
+        <button class="search-back" @click="backInit">返回全部记录</button>
       </div>
     </transition>
     <div class="content" v-loading="loading">
@@ -35,9 +35,9 @@
         <section v-for="log in logs" :key="log.id">
           <span class="point-time"></span>
           <aside>
-            <p class="things" v-html="log.message"></p>
+            <p class="things" v-html="log.cmdValue"></p>
             <p class="brief">
-              <span class="text-yellow">{{ log.user_name }}</span> {{ log.time | dateTimeFormatter }}
+              <span class="text-yellow">{{ log.userId }}</span> {{ log.createTime | dateTimeFormatter }}
             </p>
           </aside>
         </section>
@@ -59,10 +59,10 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import log from 'lin/models/log'
 import { searchLogKeyword } from 'lin/utils/search'
 import LinSearch from '@/components/base/search/lin-search'
 import LinDatePicker from '@/components/base/date-picker/lin-date-picker'
+import log from '@/models/executelog'
 
 export default {
   components: {
@@ -76,6 +76,7 @@ export default {
       logs: [],
       users: [],
       searchUser: '',
+      searchUserId: 0,
       more: false,
       loading: false,
       finished: false,
@@ -97,13 +98,13 @@ export default {
   },
   watch: {
     // 用户搜索
-    searchUser(user) {
-      this.keyword = user
+    searchUser(username) {
+      this.keyword = username
       if (this.searchKeyword) {
-        this.keyword = `${user} ${this.searchKeyword}`
+        this.keyword = `${username} ${this.searchKeyword}`
       }
       if (this.searchDate.length) {
-        this.keyword = `${user} ${this.searchKeyword} ${this.searchDate}`
+        this.keyword = `${username} ${this.searchKeyword} ${this.searchDate}`
       }
       this.searchPage()
     },
@@ -155,17 +156,19 @@ export default {
   },
   methods: {
     // 下拉框
-    handleCommand(user) {
-      this.searchUser = user[0] // eslint-disable-line
+    handleCommand(userItem) {
+      this.searchUserId = userItem[1] // eslint-disable-line
+      this.searchUser = userItem[0] // eslint-disable-line
     },
     // 页面初始化
     async initPage() {
       try {
         if (this.user.isSuper || this.auths.includes('查询日志记录的用户')) {
-          this.users = await log.getLoggedUsers({})
+          const res = await log.getLoggedUsers({})
+          this.users = res.content
         }
         const res = await log.getLogs({ page: 0 })
-        this.logs = res.items
+        this.logs = res.content
       } catch (err) {
         console.error(err)
       }
@@ -177,16 +180,18 @@ export default {
       this.loading = true
       this.finished = false
       const name = this.searchUser === '全部人员' ? '' : this.searchUser
+      const userId = this.searchUserId
       const res = await log.searchLogs({
         page: 0, // 初始化
         keyword: this.searchKeyword,
         name,
+        userId,
         start: this.searchDate[0],
         end: this.searchDate[1],
       })
       if (res) {
-        let logs = res.items
-        this.totalCount = res.total
+        let logs = res.content
+        this.totalCount = res.totalElements
         if (this.searchKeyword) {
           logs = await searchLogKeyword(this.searchKeyword, logs)
         }
@@ -207,7 +212,7 @@ export default {
         res = await log.moreLogPage()
       }
       if (res) {
-        let moreLogs = res.items
+        let moreLogs = res.content
         if (this.isSearch && this.searchKeyword) {
           moreLogs = await searchLogKeyword(this.searchKeyword, moreLogs)
         }
@@ -227,6 +232,7 @@ export default {
     // 清空检索
     async backInit() {
       this.searchUser = ''
+      this.searchUserId = 0
       this.searchKeyword = ''
       this.searchDate = []
       this.keyword = ''

@@ -38,7 +38,7 @@ export async function searchForWords(words, content) {
  */
 export async function searchLogKeyword(keyword, logs, className = 'strong') {
   const _logs = logs.map(log => {
-    let msg = log.message
+    let msg = log.cmdValue
     msg = msg.replace(RegExp(`${keyword}`, 'g'), `<span class="${className}">${keyword}</span>`)
     // eslint-disable-next-line
     log.message = msg

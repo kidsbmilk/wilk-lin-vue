@@ -12,6 +12,8 @@ class ExecuteLog {
 
   keyword = null
 
+  dateSorterDesc = true
+
   constructor({
     uPage = 0,
     uCount = 5,
@@ -94,7 +96,7 @@ class ExecuteLog {
    * @param {number} start 起始时间 # 2018-11-01 09:39:35
    * @param {number} end 结束时间
    */
-  async getLogs({ count, page, name, userId, start, end, next = false }) {
+  async getLogs({ count, page, name, userId, start, end, dateSorterDesc, next = false }) {
     try {
       if (!next) {
         this.setBaseInfo(name, userId, start, end)
@@ -102,12 +104,17 @@ class ExecuteLog {
       if (page === 0) {
         this.lPage = 0
       }
+      let dateSorterDescTemp = true
+      if (dateSorterDesc !== null && dateSorterDesc !== undefined) {
+        dateSorterDescTemp = dateSorterDesc
+      }
       const res = await get('cmd/execute/log/list', {
         page: page || this.lPage,
         size: count || this.lCount,
         userId: userId || this.userId,
         start: start || this.start,
         end: end || this.end,
+        dateSorterDesc: dateSorterDescTemp
       })
       return res.result
     } catch (error) {
@@ -125,7 +132,7 @@ class ExecuteLog {
    * @param {number} start 起始时间 # 2018-11-01 09:39:35
    * @param {number} end 结束时间
    */
-  async searchLogs({ count, page, keyword, name, userId, start, end, next = false }) {
+  async searchLogs({ count, page, keyword, name, userId, start, end, dateSorterDesc, next = false }) {
     if (!next) {
       this.setBaseInfo(name, userId, start, end)
       this.setKeyword(keyword)
@@ -134,6 +141,10 @@ class ExecuteLog {
       this.sPage = 0
     }
     try {
+      let dateSorterDescTemp = true
+      if (dateSorterDesc !== null && dateSorterDesc !== undefined) {
+        dateSorterDescTemp = dateSorterDesc
+      }
       const res = await get('cmd/execute/log/list', {
         size: count || this.sCount,
         page: page || this.sPage,
@@ -141,6 +152,7 @@ class ExecuteLog {
         userId: userId || this.userId,
         start: start || this.start,
         end: end || this.end,
+        dateSorterDesc: dateSorterDescTemp
       })
       return res.result
     } catch (error) {

@@ -4,7 +4,14 @@
       <div class="log-header">
         <div class="header-left"><p class="title">命令执行记录信息</p></div>
         <div class="header-right" v-auth="'搜索记录'">
-          <lin-search @query="onQueryChange" ref="searchKeyword" />
+          <el-switch size="medium"
+            v-model="dateSorterDesc"
+            active-text="日期倒序"
+            inactive-text="日期正序"
+            @change="changeDateSorter"
+          >
+          </el-switch>
+          <lin-search @query="onQueryChange" style="margin: 0 0 0 10px;" ref="searchKeyword" />
           <el-dropdown size="medium" style="margin: 0 10px;" @command="handleCommand" v-auth="'查询记录的用户'">
             <el-button size="medium">
               {{ searchUser ? searchUser : '全部人员' }} <i class="el-icon-arrow-down el-icon--right"></i>
@@ -71,6 +78,7 @@ export default {
   },
   data() {
     return {
+      dateSorterDesc: true,
       log: null,
       value: '',
       logs: [],
@@ -155,6 +163,11 @@ export default {
     },
   },
   methods: {
+    changeDateSorter(value) {
+      this.dateSorterDesc = value
+      // console.log(value)
+      this.searchPage()
+    },
     // 下拉框
     handleCommand(userItem) {
       this.searchUserId = userItem[1] // eslint-disable-line
@@ -167,7 +180,7 @@ export default {
           const res = await log.getLoggedUsers({})
           this.users = res.content
         }
-        const res = await log.getLogs({ page: 0 })
+        const res = await log.getLogs({ page: 0, dateSorterDesc: this.dateSorterDesc })
         this.logs = res.content
       } catch (err) {
         console.error(err)
@@ -188,6 +201,7 @@ export default {
         userId,
         start: this.searchDate[0],
         end: this.searchDate[1],
+        dateSorterDesc: this.dateSorterDesc
       })
       if (res) {
         let logs = res.content
@@ -231,6 +245,7 @@ export default {
     },
     // 清空检索
     async backInit() {
+      this.dateSorterDesc = true
       this.searchUser = ''
       this.searchUserId = 0
       this.searchKeyword = ''

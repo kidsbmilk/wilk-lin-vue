@@ -43,12 +43,21 @@
     </transition>
     <div class="content" v-loading="loading">
       <article>
-        <section v-for="log in logs" :key="log.id">
+        <section v-for="(log, index) in logs" :key="log.id">
           <span class="point-time"></span>
           <aside>
             <p class="things" v-html="log.cmdValue"></p>
+            <p v-if="log.result.length <= collapseLen">{{ log.result }}</p>
+            <p v-if="log.result.length > collapseLen">{{ log.result.substring(0, collapseLen) }}</p>
+            <collapse>
+              <div class="container" v-show="log.isActive">
+                <p>{{ log.result.substring(collapseLen) }}</p>
+              </div>
+            </collapse>
+            <button v-if="log.result.length > collapseLen" @click="handleCollapse(log, index)"> {{ log.isActive ? '折叠' : '展开' }}</button>
             <p class="brief">
-              <span class="text-yellow" v-if="log.serverValue !== log.cmdValue">{{ log.serverValue }}</span> <span class="text-yellow">{{ log.userId }}</span> {{ log.createTime | dateTimeFormatter }}
+              <span class="text-yellow" v-if="log.serverName || log.serverValue !== log.cmdValue">{{ log.serverName ? log.serverName : log.serverValue }}</span>
+              <span class="text-yellow">{{ log.userName }}</span> {{ log.createTime | dateTimeFormatter }}
             </p>
           </aside>
         </section>
@@ -74,14 +83,18 @@ import { searchLogKeyword } from 'lin/utils/search'
 import LinSearch from '@/components/base/search/lin-search'
 import WilkDateTimePicker from '@/components/custom/wilk-date-time-picker'
 import log from '@/models/executelog'
+import collapse from '@/assets/js/collapse'
 
 export default {
   components: {
     LinSearch,
     WilkDateTimePicker,
+    collapse
   },
   data() {
     return {
+      isActivateMap: {},
+      collapseLen: 200,
       dateSorterDesc: true,
       log: null,
       value: '',
@@ -169,6 +182,15 @@ export default {
     },
   },
   methods: {
+    handleCollapse(logItem, index) {
+      if (logItem.isActive === undefined) {
+        logItem['isActive'] = true // eslint-disable-line
+      } else {
+        logItem.isActive = !logItem.isActive
+      }
+      this.logs.splice(index, 1)
+      this.logs.splice(index, 0, logItem)
+    },
     changeDateSorter(value) {
       this.dateSorterDesc = value
       // console.log(value)

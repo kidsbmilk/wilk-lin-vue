@@ -4,10 +4,14 @@
       <div class="log-header">
         <div class="header-left"><p class="title">命令执行记录信息</p></div>
         <div class="header-right" v-auth="'搜索记录'">
+          <span>日期：</span>
           <el-switch size="medium"
+            class="executeswitch"
             v-model="dateSorterDesc"
-            active-text="日期倒序"
-            inactive-text="日期正序"
+            active-color="#00A854"
+            inactive-color="#BFBFBF"
+            active-text="倒序"
+            inactive-text="正序"
             @change="changeDateSorter"
           >
           </el-switch>
@@ -454,6 +458,29 @@ export default {
 }
 </style>
 <style>
+.executeswitch .el-switch__label {
+  position: absolute;
+  display: none;
+  color: #fff!important;
+}
+/*打开时文字位置设置*/
+.executeswitch .el-switch__label--right {
+  z-index: 1;
+  right: -3px;
+}
+/*关闭时文字位置设置*/
+.executeswitch .el-switch__label--left {
+  z-index: 1;
+  left: 19px;
+}
+/*显示文字*/
+.executeswitch .el-switch__label.is-active {
+  display: block;
+}
+.executeswitch.el-switch .el-switch__core,
+.el-switch .el-switch__label {
+  width: 50px !important;
+}
 .strong {
   color: #464dd5;
 }

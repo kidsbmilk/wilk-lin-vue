@@ -47,8 +47,7 @@
           <span class="point-time"></span>
           <aside>
             <p class="things" v-html="log.cmdValue"></p>
-            <p v-if="log.result.length <= collapseLen">{{ log.result }}</p>
-            <p v-if="log.result.length > collapseLen">{{ log.result.substring(0, collapseLen) }}</p>
+            <p>{{ log.result.length > collapseLen ? log.result.substring(0, collapseLen) : log.result }}</p>
             <collapse>
               <div class="container" v-show="log.isActive">
                 <p>{{ log.result.substring(collapseLen) }}</p>

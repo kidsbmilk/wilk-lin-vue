@@ -27,7 +27,7 @@
               </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
-          <lin-date-picker @dateChange="handleDateChange" ref="searchDate" class="date"> </lin-date-picker>
+          <wilk-date-time-picker @dateChange="handleDateChange" ref="searchDate" class="date"> </wilk-date-time-picker>
         </div>
       </div>
       <el-divider v-if="!keyword"></el-divider>
@@ -72,13 +72,13 @@
 import { mapGetters } from 'vuex'
 import { searchLogKeyword } from 'lin/utils/search'
 import LinSearch from '@/components/base/search/lin-search'
-import LinDatePicker from '@/components/base/date-picker/lin-date-picker'
+import WilkDateTimePicker from '@/components/custom/wilk-date-time-picker'
 import log from '@/models/executelog'
 
 export default {
   components: {
     LinSearch,
-    LinDatePicker,
+    WilkDateTimePicker,
   },
   data() {
     return {
@@ -163,7 +163,9 @@ export default {
         }
         this.$refs.searchDate.clear()
       }
-      this.searchPage()
+      if (newDate && newDate.length) {
+        this.searchPage()
+      }
     },
   },
   methods: {
@@ -198,13 +200,19 @@ export default {
       this.finished = false
       const name = this.searchUser === '全部人员' ? '' : this.searchUser
       const userId = this.searchUserId
+      let startTemp = null
+      let endTemp = null
+      if (this.searchDate && this.searchDate.length) {
+        startTemp = this.searchDate[0] // eslint-disable-line
+        endTemp = this.searchDate[1] // eslint-disable-line
+      }
       const res = await log.searchLogs({
         page: 0, // 初始化
         keyword: this.searchKeyword,
         name,
         userId,
-        start: this.searchDate[0],
-        end: this.searchDate[1],
+        start: startTemp,
+        end: endTemp,
         dateSorterDesc: this.dateSorterDesc
       })
       if (res) {

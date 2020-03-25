@@ -516,7 +516,7 @@ export default {
   color: #464dd5;
 }
 .collpase-div {
-  height: 44px;
+  height: 22px;
   box-sizing: border-box;
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
@@ -528,7 +528,7 @@ export default {
 }
 .collpase-i {
   font-size: 16px;
-  line-height: 44px;
+  line-height: 22px;
   transition: .3s;
 }
 </style>

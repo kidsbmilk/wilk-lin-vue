@@ -37,7 +37,7 @@
           <aside>
             <p class="things" v-html="log.cmdValue"></p>
             <p class="brief">
-              <span class="text-yellow">{{ log.userId }}</span> {{ log.createTime | dateTimeFormatter }}
+              <span class="text-yellow" v-if="log.serverValue !== log.cmdValue">{{ log.serverValue }}</span> <span class="text-yellow">{{ log.userId }}</span> {{ log.createTime | dateTimeFormatter }}
             </p>
           </aside>
         </section>

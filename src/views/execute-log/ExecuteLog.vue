@@ -229,7 +229,7 @@ export default {
       } else {
         res = await log.moreLogPage()
       }
-      if (res) {
+      if (res.content.length > 0) {
         let moreLogs = res.content
         if (this.isSearch && this.searchKeyword) {
           moreLogs = await searchLogKeyword(this.searchKeyword, moreLogs)

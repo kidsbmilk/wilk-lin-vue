@@ -46,14 +46,18 @@
         <section v-for="(log, index) in logs" :key="log.id">
           <span class="point-time"></span>
           <aside>
-            <p class="things" v-html="log.cmdValue"></p>
-            <p>{{ log.result.length > collapseLen ? log.result.substring(0, collapseLen) : log.result }}</p>
-            <collapse>
-              <div class="container" v-show="log.isActive">
-                <p>{{ log.result.substring(collapseLen) }}</p>
-              </div>
-            </collapse>
-            <button v-if="log.result.length > collapseLen" @click="handleCollapse(log, index)"> {{ log.isActive ? '折叠' : '展开' }}</button>
+            <div class="things" v-html="log.cmdValue"></div>
+            <div>
+              <p v-show="!log.isActive">{{ log.result.length > collapseLen ? log.result.substring(0, collapseLen) : log.result }}</p>
+              <p v-show="log.isActive">
+                {{ log.result }}
+              </p>
+            </div>
+            <div class="collpase-div" v-if="log.result.length > collapseLen" @click="handleCollapse(log, index)">
+              <i :class="log.isActive ? 'el-icon-caret-top collpase-i' : 'el-icon-caret-bottom collpase-i'">
+                {{ log.isActive ? '折叠' : '展开' }}
+              </i>
+            </div>
             <p class="brief">
               <span class="text-yellow" v-if="log.serverName || log.serverValue !== log.cmdValue">{{ log.serverName ? log.serverName : log.serverValue }}</span>
               <span class="text-yellow">{{ log.userName }}</span> {{ log.createTime | dateTimeFormatter }}
@@ -82,13 +86,11 @@ import { searchLogKeyword } from 'lin/utils/search'
 import LinSearch from '@/components/base/search/lin-search'
 import WilkDateTimePicker from '@/components/custom/wilk-date-time-picker'
 import log from '@/models/executelog'
-import collapse from '@/assets/js/collapse'
 
 export default {
   components: {
     LinSearch,
     WilkDateTimePicker,
-    collapse
   },
   data() {
     return {
@@ -512,5 +514,21 @@ export default {
 }
 .strong {
   color: #464dd5;
+}
+.collpase-div {
+  height: 44px;
+  box-sizing: border-box;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  text-align: center;
+  margin-top: -1px;
+  color: #0079ff;
+  cursor: pointer;
+  position: relative;
+}
+.collpase-i {
+  font-size: 16px;
+  line-height: 44px;
+  transition: .3s;
 }
 </style>

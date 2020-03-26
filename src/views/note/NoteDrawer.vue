@@ -1,16 +1,15 @@
 <template>
-  <div>
     <el-drawer
-      title="我是标题"
+      title="笔记"
       :visible.sync="drawer"
-      :with-header="false">
-      <span>我来啦!</span>
+      :with-header="false"
+      size="60%"
+    >
+      <div class="lin-container">
+        <div class="lin-title">随手记</div>
+        <div class="lin-wrap"><tinymce @change="change" upload_url="http://dev.lin.colorful3.com/cms/file/" /></div>
+      </div>
     </el-drawer>
-    <div class="lin-container">
-      <div class="lin-title">富文本舞台页面</div>
-      <div class="lin-wrap"><tinymce @change="change" upload_url="http://dev.lin.colorful3.com/cms/file/" /></div>
-    </div>
-  </div>
 </template>
 
 <script>
@@ -40,4 +39,8 @@ export default {
 }
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.el-drawer {
+  width: 60%;
+}
+</style>

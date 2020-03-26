@@ -77,7 +77,7 @@ export default {
   },
   methods: {
     async handleOptionChange(value) {
-      const newNoteId = value[0]
+      const newNoteId = value[value.length - 1]
       if (this.noteId !== newNoteId) {
         if (this.tinymceContent !== this.lastSavedContent) { // eslint-disable-line
           let res = null

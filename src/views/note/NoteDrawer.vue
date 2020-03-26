@@ -6,7 +6,18 @@
       size="60%"
     >
       <div class="lin-container">
-        <div class="lin-title">随手记</div>
+        <div>
+          <div style="display: inline; float: left; line-height: 59px;">
+            <span class="demonstration">选择笔记：</span>
+            <el-cascader
+              placeholder="搜一搜"
+              :options="noteOptions"
+              :props="{ expandTrigger: 'hover' }"
+              @change="handleOptionChange"
+              filterable></el-cascader>
+          </div>
+          <div class="lin-title" style="display: inline; border-bottom: none;">随手记</div>
+        </div>
         <div class="lin-wrap">
           <tinymce @change="change"
                    :height="height"
@@ -25,13 +36,14 @@ export default {
   inject: ['eventBus'],
   data() {
     return {
-      noteId: null,
+      noteId: '',
       lastSavedContent: '',
       height: 700,
       imgUploadUrl: 'image/upload',
       tinymceContent: '',
       drawer: false,
       defaultContent: '',
+      noteOptions: [],
     }
   },
   components: {
@@ -47,7 +59,7 @@ export default {
     async drawer(newVal) {
       if (!newVal && this.tinymceContent !== this.lastSavedContent) {
         let res = null
-        if (this.noteId) {
+        if (this.noteId !== '') {
           res = await note.modify(this.noteId, this.tinymceContent, null, null)
         } else {
           res = await note.save(this.tinymceContent, null, null)
@@ -64,15 +76,42 @@ export default {
     }
   },
   methods: {
+    async handleOptionChange(value) {
+      const newNoteId = value[0]
+      if (this.noteId !== newNoteId) {
+        if (this.tinymceContent !== this.lastSavedContent) { // eslint-disable-line
+          let res = null
+          if (this.noteId !== '') {
+            res = await note.modify(this.noteId, this.tinymceContent, null, null)
+          } else {
+            res = await note.save(this.tinymceContent, null, null)
+          }
+          if (res.code !== 0) {
+            console.log('保存失败！')
+          }
+        }
+        this.noteId = newNoteId
+        const res = await note.detail(newNoteId)
+        if (res.code === 0) {
+          this.lastSavedContent = res.result.content
+          this.tinymceContent = res.result.content
+          this.defaultContent = res.result.content
+        }
+      }
+    },
     async initContent() {
-      const res = await note.getTodayNote()
+      let res = await note.getTodayNote()
       if (res.code === 0) {
         if (res.result.id) {
-          this.noteId = res.result.id
+          this.noteId = res.result.id.toString()
         }
         this.lastSavedContent = res.result.content
         this.tinymceContent = res.result.content
         this.defaultContent = res.result.content
+      }
+      res = await note.list()
+      if (res.code === 0) {
+        this.noteOptions = res.result
       }
     },
     change(val) {

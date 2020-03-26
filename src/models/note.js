@@ -18,12 +18,12 @@ class Note {
     return res
   }
 
-  async modify(content, title, tag, noteId) {
+  async modify(noteId, content, title, tag) {
     const res = await post('note/modify', {
+      noteId,
       content,
       title,
-      tag,
-      noteId
+      tag
     })
     return res
   }
@@ -32,6 +32,11 @@ class Note {
     const res = await get('note/detail', {
       noteId
     })
+    return res
+  }
+
+  async getTodayNote() {
+    const res = await get('note/today')
     return res
   }
 

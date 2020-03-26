@@ -25,7 +25,7 @@ export default {
       type: Number,
       default: undefined,
     },
-    upload_url: {
+    imgUploadUrl: {
       type: String,
       default: '',
     },
@@ -84,7 +84,7 @@ export default {
         _this
           .$axios({
             method: 'post',
-            url: '/cms/file',
+            url: this.imgUploadUrl,
             data: {
               file,
             },

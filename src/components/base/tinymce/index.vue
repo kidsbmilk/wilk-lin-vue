@@ -1,6 +1,6 @@
 <template>
   <div>
-    <editor id="tinymceEditor" :height="height" :upload_url="upload_url" :init="tinymceInit" v-model="content" :key="tinymceFlag"></editor>
+    <editor id="tinymceEditor" :init="tinymceInit" v-model="content" :key="tinymceFlag"></editor>
   </div>
 </template>
 <script>

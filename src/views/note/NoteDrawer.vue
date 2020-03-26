@@ -7,7 +7,7 @@
     >
       <div class="lin-container">
         <div class="lin-title">随手记</div>
-        <div class="lin-wrap"><tinymce @change="change" :height="700" :upload_url="cms/file" /></div>
+        <div class="lin-wrap"><tinymce @change="change" :height="700" upload_url="cms/file" /></div>
       </div>
     </el-drawer>
 </template>

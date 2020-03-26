@@ -7,18 +7,20 @@
     >
       <div class="lin-container">
         <div class="lin-title">随手记</div>
-        <div class="lin-wrap"><tinymce @change="change" upload_url="http://dev.lin.colorful3.com/cms/file/" /></div>
+        <div class="lin-wrap"><tinymce @change="change" :height="700" :upload_url="cms/file" /></div>
       </div>
     </el-drawer>
 </template>
 
 <script>
 import Tinymce from '@/components/base/tinymce'
+import note from '@/models/note'
 
 export default {
   inject: ['eventBus'],
   data() {
     return {
+      tinymceContent: '',
       drawer: false,
       text: 'this is default content',
     }
@@ -31,9 +33,20 @@ export default {
       this.drawer = true
     })
   },
+  watch: {
+    async drawer(newVal) {
+      if (!newVal) {
+        const res = await note.save(this.tinymceContent)
+        if (res.code === 0) {
+          this.$message.success('保存成功')
+          // console.log('保存成功')
+        }
+      }
+    }
+  },
   methods: {
     change(val) {
-      console.log(val)
+      this.tinymceContent = val
     },
   },
 }

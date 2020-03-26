@@ -7,7 +7,7 @@
     >
       <div class="lin-container">
         <div>
-          <div style="display: inline; float: left; line-height: 59px;">
+          <div style="display: inline; float: left; margin-left: 5%; line-height: 59px;">
             <span class="demonstration">选择笔记：</span>
             <el-cascader
               placeholder="搜一搜"

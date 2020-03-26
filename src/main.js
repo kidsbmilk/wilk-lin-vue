@@ -20,6 +20,7 @@ import SourceCode from '@/components/base/source-code/source-code'
 import '@/assets/styles/index.scss' // eslint-disable-line
 import '@/assets/styles/realize/element-variables.scss'
 import 'element-ui/lib/theme-chalk/display.css'
+import 'element-ui/lib/theme-chalk/index.css'// element-ui的css
 
 Vue.config.productionTip = false
 

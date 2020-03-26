@@ -5,6 +5,7 @@
       <!-- 暂时放这里 -->
       <div class="right-info">
         <notify v-auth="'消息推送'" v-show="false" />
+        <note-tab></note-tab>
         <clear-tab></clear-tab>
         <screenfull /> <user></user>
       </div>
@@ -18,6 +19,7 @@ import Breadcrumb from './Breadcrumb'
 import Screenfull from './Screenfull'
 import User from './User'
 import ClearTab from './ClearTab'
+import NoteTab from './NoteTab'
 
 export default {
   name: 'NavBar',
@@ -28,6 +30,7 @@ export default {
     Notify,
     Screenfull,
     ClearTab,
+    NoteTab,
   },
 }
 </script>

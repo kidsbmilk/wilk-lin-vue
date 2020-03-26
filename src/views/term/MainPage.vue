@@ -133,7 +133,6 @@ import * as attach from 'xterm/lib/addons/attach/attach'
 import 'xterm/dist/xterm.css'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import treePage from './TreePage.vue'
-import 'element-ui/lib/theme-chalk/index.css'// element-ui的css
 import wilkTerm from '@/models/term/wilkterm'
 import TermPaneInfo from '@/models/term/TermPaneInfo'
 

@@ -20,6 +20,7 @@
         </el-main>
         <back-top :right="50" :bottom="50" :fontSize="34"></back-top>
       </el-container>
+      <note-drawer style="z-index: 10"></note-drawer>
       <div class="sidenav-mask" :class="{ show: isPhone && isCollapse }" @click="changeSlidebarState"></div>
     </el-container>
   </div>
@@ -27,6 +28,7 @@
 
 <script>
 import { NavBar, SideBar, AppMain, ReuseTab, MenuTab, BackTop } from '@/components/layout'
+import NoteDrawer from '@/views/note/NoteDrawer'
 
 const navBarHeight = 66 // header高度
 const reuseTabHeight = 70 // 历史记录栏高度
@@ -166,6 +168,7 @@ export default {
     ReuseTab,
     MenuTab,
     BackTop,
+    NoteDrawer,
   },
   beforeDestroy() {
     this.eventBus.$off('noReuse')

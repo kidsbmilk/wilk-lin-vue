@@ -21,7 +21,6 @@
         <div class="lin-wrap">
           <tinymce @change="change"
                    :height="height"
-                   :imgUploadUrl="imgUploadUrl"
                    :defaultContent="defaultContent" />
         </div>
       </div>
@@ -39,7 +38,6 @@ export default {
       noteId: '',
       lastSavedContent: '',
       height: 700,
-      imgUploadUrl: 'image/upload',
       tinymceContent: '',
       drawer: false,
       defaultContent: '',

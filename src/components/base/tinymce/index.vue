@@ -25,10 +25,6 @@ export default {
       type: Number,
       default: undefined,
     },
-    imgUploadUrl: {
-      type: String,
-      default: '',
-    },
     showMenubar: {
       type: Boolean,
       default: true,
@@ -84,7 +80,7 @@ export default {
         _this
           .$axios({
             method: 'post',
-            url: this.imgUploadUrl,
+            url: 'image/upload', // 需要使用外部的图片上传服务 TODO.
             data: {
               file,
             },

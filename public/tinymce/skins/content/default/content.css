@@ -42,3 +42,7 @@ code {
   border-radius: 3px;
   padding: .1rem .2rem;
 }
+body p {
+  padding: 0;
+  margin: 2px 0;
+}

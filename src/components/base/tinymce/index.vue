@@ -55,7 +55,7 @@ export default {
     }
   },
   created() {
-    const _this = this
+    const _this = this // eslint-disable-line
     this.tinymceInit = {
       language_url: `${this.baseUrl}/tinymce/langs/zh_CN.js`,
       skin_url: `${this.baseUrl}/tinymce/skins/ui/oxide`,
@@ -73,24 +73,24 @@ export default {
         visualchars template codesample charmap hr pagebreak nonbreaking anchor toc insertdatetime 
         wordcount textpattern help advlist table lists paste preview fullscreen image imagetools code link`,
       toolbar: this.toolbar,
-      async images_upload_handler(blobInfo, success, failure) {
-        const file = new File([blobInfo.blob()], blobInfo.filename(), {
+      async images_upload_handler(blobInfo, success, failure) { // eslint-disable-line
+        const file = new File([blobInfo.blob()], blobInfo.filename(), { // eslint-disable-line
           type: 'image/*',
         })
-        _this
-          .$axios({
-            method: 'post',
-            url: 'image/upload', // 需要使用外部的图片上传服务 TODO.
-            data: {
-              file,
-            },
-          })
-          .then(res => {
-            if (res[0] && res[0].url) {
-              success(res[0].url)
-            }
-          })
-          .catch(err => failure(err))
+        // _this
+        //   .$axios({
+        //     method: 'post',
+        //     url: '', // 需要使用外部的图片上传服务 TODO.
+        //     data: {
+        //       file,
+        //     },
+        //   })
+        //   .then(res => {
+        //     if (res[0] && res[0].url) {
+        //       success(res[0].url)
+        //     }
+        //   })
+        //   .catch(err => failure(err))
       },
     }
   },

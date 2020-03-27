@@ -17,6 +17,37 @@
               filterable></el-cascader>
           </div>
           <div class="lin-title" style="display: inline; border-bottom: none;">随手记</div>
+          <el-button type="primary" plain v-if="noteId !== ''" @click="openEditNote"
+                     style="margin-left: 15%">修改笔记信息</el-button>
+          <el-dialog
+            title = '修改笔记信息'
+            :append-to-body="true"
+            :visible.sync="showChangeNoteInfo"
+            :before-close="handleClose"
+            class="groupListInfoDialog"
+          >
+            <el-form
+              status-icon
+              ref="formChangeNoteInfo"
+              label-width="120px"
+              :model="formChangeNoteInfo"
+              label-position="labelPosition"
+              style="margin-left:-35px;margin-bottom:-35px;margin-top:15px;"
+            >
+              <el-form-item label="笔记名" prop="name">
+                <el-input size="medium" clearable
+                          v-model="formChangeNoteInfo.noteTitle"></el-input>
+              </el-form-item>
+              <el-form-item label="笔记标签" prop="value">
+                <el-input size="medium"
+                          clearable v-model="formChangeNoteInfo.noteTag" placeholder="多个标签以逗号分隔"></el-input>
+              </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer" style="padding-left:5px;">
+              <el-button type="primary" @click="changeNoteInfo">确 定</el-button>
+              <el-button @click="cancelChangeNote">取消</el-button>
+            </div>
+          </el-dialog>
         </div>
         <div class="lin-wrap">
           <tinymce @change="change"
@@ -35,6 +66,11 @@ export default {
   inject: ['eventBus'],
   data() {
     return {
+      showChangeNoteInfo: false,
+      formChangeNoteInfo: {
+        noteTitle: '',
+        noteTag: ''
+      },
       noteId: '',
       lastSavedContent: '',
       height: 700,
@@ -74,6 +110,24 @@ export default {
     }
   },
   methods: {
+    openEditNote() {
+      this.showChangeNoteInfo = true
+    },
+    // 弹框 右上角 X
+    handleClose(done) {
+      done()
+    },
+    async changeNoteInfo() {
+      const res = await note.modify(this.noteId, null,
+        this.formChangeNoteInfo.noteTitle, this.formChangeNoteInfo.noteTag)
+      if (res.code === 0) {
+        this.noteOptions = res.result
+        this.showChangeNoteInfo = false
+      }
+    },
+    cancelChangeNote() {
+      this.showChangeNoteInfo = false
+    },
     async handleOptionChange(value) {
       const newNoteId = value[value.length - 1]
       if (this.noteId !== newNoteId) {

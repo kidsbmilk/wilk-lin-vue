@@ -10,10 +10,14 @@
           <div style="display: inline; float: left; margin-left: 5%; line-height: 59px;">
             <span class="demonstration">选择笔记：</span>
             <el-cascader
+              :key="isResouceShow"
+              :disabled="optionsIsDisabled"
+              v-model="cascaderValue"
               placeholder="搜一搜"
               :options="noteOptions"
               :props="{ expandTrigger: 'hover' }"
               @change="handleOptionChange"
+              clearable
               filterable></el-cascader>
           </div>
           <div class="lin-title" style="display: inline; border-bottom: none;">随手记</div>
@@ -66,6 +70,9 @@ export default {
   inject: ['eventBus'],
   data() {
     return {
+      cascaderValue: [],
+      isResouceShow: 0,
+      optionsIsDisabled: false,
       showChangeNoteInfo: false,
       formChangeNoteInfo: {
         noteTitle: '',
@@ -120,8 +127,18 @@ export default {
     async changeNoteInfo() {
       const res = await note.modify(this.noteId, null,
         this.formChangeNoteInfo.noteTitle, this.formChangeNoteInfo.noteTag)
+      this.formChangeNoteInfo = {
+        noteTitle: '',
+        noteTag: ''
+      }
       if (res.code === 0) {
+        const oldValue = this.cascaderValue
+        this.cascaderValue = []
+        ++this.isResouceShow
+        this.optionsIsDisabled = true
         this.noteOptions = res.result
+        this.optionsIsDisabled = false
+        this.cascaderValue = oldValue
         this.showChangeNoteInfo = false
       }
     },

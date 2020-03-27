@@ -146,6 +146,13 @@ export default {
       this.showChangeNoteInfo = false
     },
     async handleOptionChange(value) {
+      if (value.length === 0) {
+        this.noteId = ''
+        this.lastSavedContent = ''
+        this.tinymceContent = ''
+        this.defaultContent = ''
+        return
+      }
       const newNoteId = value[value.length - 1]
       if (this.noteId !== newNoteId) {
         if (this.tinymceContent !== this.lastSavedContent) { // eslint-disable-line

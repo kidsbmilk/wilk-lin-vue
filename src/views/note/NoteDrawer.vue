@@ -127,7 +127,11 @@ export default {
             this.noteId = res.result.toString()
             res = await note.list()
             if (res.code === 0) {
+              this.cascaderValue = []
+              ++this.isResouceShow
+              this.optionsIsDisabled = true
               this.noteOptions = res.result
+              this.optionsIsDisabled = false
               const valueTemp = []
               if (this.noteOptions.length > 0 && this.noteOptions[0].children !== null
                   && this.noteOptions[0].children !== undefined && this.noteOptions[0].children.length > 0) {
@@ -193,6 +197,7 @@ export default {
       this.showChangeNoteInfo = false
     },
     async handleOptionChange(value) {
+      // console.log(value)
       if (value.length === 0) {
         this.noteId = ''
         this.lastSavedContent = ''
@@ -250,13 +255,14 @@ export default {
             valueTemp.push('0')
           }
           valueTemp.push(this.noteId)
+          // console.log(valueTemp)
           this.cascaderValue = valueTemp
         }
       }
     },
     change(val) {
       this.tinymceContent = val
-      console.log(val)
+      // console.log(val)
     },
   },
 }

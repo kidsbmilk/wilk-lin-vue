@@ -124,7 +124,18 @@ export default {
         } else {
           res = await note.save(this.tinymceContent, null, null)
           if (res.code === 0) {
-            this.noteId = res.result
+            this.noteId = res.result.toString()
+          }
+          res = await note.list()
+          if (res.code === 0) {
+            this.noteOptions = res.result
+            const valueTemp = []
+            if (this.noteOptions.length > 0 && this.noteOptions[0].children !== null
+                && this.noteOptions[0].children !== undefined && this.noteOptions[0].children.length > 0) {
+              valueTemp.push('0')
+            }
+            valueTemp.push(this.noteId)
+            this.cascaderValue = valueTemp
           }
         }
         this.lastSavedContent = this.tinymceContent

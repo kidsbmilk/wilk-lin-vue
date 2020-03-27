@@ -18,7 +18,12 @@
               :props="{ expandTrigger: 'hover' }"
               @change="handleOptionChange"
               clearable
-              filterable></el-cascader>
+              filterable>
+              <template slot-scope="{ node, data }">
+                <span>{{ data.label }}</span>
+                <span v-if="!node.isLeaf"> ({{ data.children.length }}) </span>
+              </template>
+            </el-cascader>
           </div>
           <div class="lin-title" style="display: inline; border-bottom: none;">随手记</div>
           <el-button type="primary" plain v-if="noteId !== ''" @click="openEditNote"

@@ -61,7 +61,7 @@
                   @blur="handleInputConfirm"
                 >
                 </el-input>
-                <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
+                <el-button v-else class="button-new-tag" size="small" style="width: 60px; padding: unset;" @click="showInput">+</el-button>
               </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer" style="padding-left:5px;">

@@ -43,8 +43,25 @@
                           v-model="formChangeNoteInfo.noteTitle"></el-input>
               </el-form-item>
               <el-form-item label="笔记标签" prop="value">
-                <el-input size="medium"
-                          clearable v-model="formChangeNoteInfo.noteTag" placeholder="多个标签以逗号分隔"></el-input>
+                <el-tag
+                  :key="tag"
+                  v-for="tag in formChangeNoteInfo.noteTag"
+                  closable
+                  :disable-transitions="false"
+                  @close="handleCloseTag(tag)">
+                  {{tag}}
+                </el-tag>
+                <el-input
+                  class="input-new-tag"
+                  v-if="inputVisible"
+                  v-model="inputValue"
+                  ref="saveTagInput"
+                  size="small"
+                  @keyup.enter.native="handleInputConfirm"
+                  @blur="handleInputConfirm"
+                >
+                </el-input>
+                <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
               </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer" style="padding-left:5px;">
@@ -74,9 +91,11 @@ export default {
       isResouceShow: 0,
       optionsIsDisabled: false,
       showChangeNoteInfo: false,
+      inputVisible: false,
+      inputValue: '',
       formChangeNoteInfo: {
         noteTitle: '',
-        noteTag: ''
+        noteTag: []
       },
       noteId: '',
       lastSavedContent: '',
@@ -124,13 +143,30 @@ export default {
     handleClose(done) {
       done()
     },
+    handleCloseTag(tag) {
+      this.formChangeNoteInfo.noteTag.splice(this.formChangeNoteInfo.noteTag.indexOf(tag), 1)
+    },
+    showInput() {
+      this.inputVisible = true
+      this.$nextTick(_ => { // eslint-disable-line
+        this.$refs.saveTagInput.$refs.input.focus()
+      })
+    },
+    handleInputConfirm() {
+      if (this.inputValue.indexOf(',') !== -1 || this.inputValue.indexOf('，') !== -1) {
+        this.$message.error('标签不能包含逗号！')
+        return
+      }
+      const inputValue = this.inputValue // eslint-disable-line
+      if (inputValue) {
+        this.formChangeNoteInfo.noteTag.push(inputValue)
+      }
+      this.inputVisible = false
+      this.inputValue = ''
+    },
     async changeNoteInfo() {
       const res = await note.modify(this.noteId, null,
         this.formChangeNoteInfo.noteTitle, this.formChangeNoteInfo.noteTag)
-      this.formChangeNoteInfo = {
-        noteTitle: '',
-        noteTag: ''
-      }
       if (res.code === 0) {
         const oldValue = this.cascaderValue
         this.cascaderValue = []
@@ -151,6 +187,10 @@ export default {
         this.lastSavedContent = ''
         this.tinymceContent = ''
         this.defaultContent = ''
+        this.formChangeNoteInfo = {
+          noteTitle: '',
+          noteTag: []
+        }
         return
       }
       const newNoteId = value[value.length - 1]
@@ -166,12 +206,14 @@ export default {
             console.log('保存失败！')
           }
         }
-        this.noteId = newNoteId
         const res = await note.detail(newNoteId)
         if (res.code === 0) {
+          this.noteId = res.result.id.toString()
           this.lastSavedContent = res.result.content
           this.tinymceContent = res.result.content
           this.defaultContent = res.result.content
+          this.formChangeNoteInfo.noteTitle = res.result.title
+          this.formChangeNoteInfo.noteTag = res.result.tag
         }
       }
     },
@@ -184,6 +226,8 @@ export default {
         this.lastSavedContent = res.result.content
         this.tinymceContent = res.result.content
         this.defaultContent = res.result.content
+        this.formChangeNoteInfo.noteTitle = res.result.title
+        this.formChangeNoteInfo.noteTag = res.result.tag
       }
       res = await note.list()
       if (res.code === 0) {
@@ -199,6 +243,21 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.el-tag + .el-tag {
+  margin-left: 10px;
+}
+.button-new-tag {
+  margin-left: 10px;
+  height: 32px;
+  line-height: 30px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.input-new-tag {
+  width: 90px;
+  margin-left: 10px;
+  vertical-align: bottom;
+}
 .el-drawer {
   width: 60%;
 }
